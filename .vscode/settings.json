@@ -32,11 +32,11 @@
     "powershell": "cls ; powershell -ExecutionPolicy ByPass -File"
   },
   "code-runner.executorMapByFileExtension": {
-    ".robot": "cls ; robot --argumentfile .\\config\\argumentos_cli.cfg"
+    ".robot": "cls ; robot --argumentfile .\\argumentos_cli.cfg"
   },
 
   // Python
-  "python.defaultInterpreterPath": "${workspaceFolder}\\.vscode\\.venv\\Scripts\\python.exe",
+  // "python.defaultInterpreterPath": "${workspaceFolder}\\.vscode\\.venv\\Scripts\\python.exe",
   "python.experiments.optInto": ["pythonTerminalEnvVarActivation"],
 
   // Black Formatter Python
