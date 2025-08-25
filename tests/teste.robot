@@ -1,4 +1,5 @@
 *** Settings ***
+Library     ${EXECDIR}\\source\\main.py
 Resource    ${EXECDIR}\\source\\keywords.robot
 
 
