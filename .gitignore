@@ -4,3 +4,4 @@ __pycache__/
 results/
 sikuli_captured/
 Sikuli_java**
+dist/
