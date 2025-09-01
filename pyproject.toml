@@ -1,13 +1,25 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
 [project]
-name = "robotframework-sikulipluslibrary"
-version = "0.1.0"                                                                       
+name = "robotframework-SikuliPlusLibrary"
+version = "0.1.0"
 description = "Sikuli Plus Library: keywords com ROI/similarity temporários e highlight."
 readme = "README.md"                                                                      # aparece na página do PyPI
 license = { file = "LICENSE" }                                                            # arquivo de licença
 authors = [{ name = "Leonardo Sextare", email = "leonardosextare@gmail.com" }]
-requires-python = ">=3.13"                                                                 # versão mínima de Python
+requires-python = ">=3.13"                                                                # versão mínima de Python
+dependencies = ["robotframework>=5.0"]
 
-dependencies = [
-  "robotframework>=5.0",
-  "robotframework-sikulilibrary>=2.0.3"
-]
+[project.optional-dependencies]
+sikuli = ["robotframework-sikulilibrary>=2.0.3"]
+
+[project.urls]
+Homepage = "https://github.com/LeonardoSextare/robotframework-SikuliPlusLibrary"
+
+[tool.hatch.build.targets.wheel]
+packages = ["source/SikuliPlusLibrary"]
+
+[tool.hatch.build.targets.sdist]
+include = ["source", "README.md", "LICENSE"]
