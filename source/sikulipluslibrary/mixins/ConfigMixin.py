@@ -1,6 +1,5 @@
 from robot.libraries.BuiltIn import BuiltIn
 from SikuliLibrary import SikuliLibrary
-import subprocess as sub
 
 
 class ConfigMixin:
@@ -40,7 +39,3 @@ class ConfigMixin:
 
     def _shutdown(self):
         self.sikuli.run_keyword("stop_remote_server")
-
-        comando_out = sub.run(["powershell", "Get-Process", "java"])
-        print(comando_out.stdout)
-        # os.system('powershell Stop-Process -Name "java"')
