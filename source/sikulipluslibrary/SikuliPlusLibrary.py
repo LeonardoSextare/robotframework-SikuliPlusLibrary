@@ -2,7 +2,7 @@ from robot.libraries.BuiltIn import BuiltIn
 from SikuliLibrary import SikuliLibrary
 from robot.api.deco import library, keyword
 from .SikuliWrapper import SikuliPlusMixin
-from .ConfigMixin import ConfigMixin
+from .mixins.ConfigMixin import ConfigMixin
 from .functions import _normalize_str_paths
 
 from robot.api.logger import console
