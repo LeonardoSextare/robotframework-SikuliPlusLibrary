@@ -1,6 +1,8 @@
 from robot.libraries.BuiltIn import BuiltIn
 from robot.api.deco import keyword
 from SikuliLibrary import SikuliLibrary
+import os
+from contextlib import redirect_stdout
 
 
 class ConfigMixin:
@@ -52,7 +54,9 @@ class ConfigMixin:
             self.robot.import_library("SikuliLibrary", "mode=NEW")
             self.sikuli = self.robot.get_library_instance("SikuliLibrary")
             self.sikuli.start_sikuli_process()
-        
+
         self.sikuli.run_keyword("Set Min Similarity", [self.global_similarity])
+
     def _shutdown(self):
-        self.sikuli.run_keyword("stop_remote_server")
+        with open(os.devnull, "w") as _, redirect_stdout(_):
+            self.sikuli.run_keyword("stop_remote_server")
