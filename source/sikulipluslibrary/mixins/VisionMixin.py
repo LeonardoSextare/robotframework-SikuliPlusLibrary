@@ -26,7 +26,7 @@ class VisionMixin:
 
         result = self.sikuli.run_keyword("Image Count", [image])
 
-        return result
+        return result # type: ignore
 
     @keyword
     def count_multiple_images(self, *images: str, timeout: float = 5) -> dict[str, int]:
@@ -34,13 +34,13 @@ class VisionMixin:
 
         images_counts: dict[str, int] = {}
         for img in images:
-            images_counts[img] = self.sikuli.run_keyword("Image Count", [img])
+            images_counts[img] = self.sikuli.run_keyword("Image Count", [img]) # type: ignore
         return images_counts
 
     @keyword
     def image_exists(self, image: str, timeout: float = 5) -> bool:
         result = self.sikuli.run_keyword("Exists", [image, timeout])
-        return result
+        return result # type: ignore
 
     @keyword
     def multiple_images_exists(self, *images: str, timeout: float = 5) -> dict[str, bool]:
@@ -66,11 +66,11 @@ class VisionMixin:
                 return status
 
             time.sleep(min(polling_inverval, deadline - now))
-
+    
     @keyword
     def wait_one_of_multiple_images(self, *images: str, timeout: float = 5) -> str:
         image_found = self.sikuli.run_keyword("Wait For Multiple Images", [timeout, 1, images, []])
-        return image_found
+        return image_found  # type: ignore
 
     @keyword
     def wait_multiple_images(self, *images: str, timeout: float = 5):
