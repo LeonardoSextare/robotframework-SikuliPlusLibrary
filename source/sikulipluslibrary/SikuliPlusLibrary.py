@@ -32,7 +32,6 @@ class SikuliPlusLibrary(VisionMixin):
     def start_suite(self, data, result):
         self.robot = BuiltIn()
 
-        console(f"{self.configs}")
         try:
             self.sikuli = self.robot.get_library_instance("SikuliLibrary")
         except RuntimeError:
