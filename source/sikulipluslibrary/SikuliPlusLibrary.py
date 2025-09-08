@@ -1,32 +1,45 @@
 from robot.libraries.BuiltIn import BuiltIn
 from SikuliLibrary import SikuliLibrary
-from robot.api.deco import library, keyword
-from .mixins import VisionMixin, ConfigMixin
-
+from robot.api.deco import library
 from robot.api.logger import console
+from .mixins import VisionMixin
+import os
+from contextlib import redirect_stdout
+
+from .Settings import Settings, get_settings
+
 
 @library(scope="GLOBAL", version="0.1.0")
-class SikuliPlusLibrary(ConfigMixin, VisionMixin):
+class SikuliPlusLibrary(VisionMixin):
 
-    def __init__(self) -> None:
+    def __init__(self, config_file="auto") -> None:
         self.ROBOT_LIBRARY_LISTENER = self  # Estudar
         self.ROBOT_LISTENER_API_VERSION = 3  # Estudar
 
-        self.global_similarity: float = 0.80
+        self.configs: Settings = get_settings(config_file)
+        self.similarity: float = self.configs.similarity
 
-        self.global_vision_timeout: float = 5.0
-        self.show_vision_highlight: bool
-        self.vision_highlight_timeout: float
+        self.vision_timeout: float = self.configs.vision_timeout
+        self.action_speed: float = self.configs.action_speed
 
-        self.show_actions_highlight: bool
-        self.global_action_speed: float
+        self.highlight: bool = self.configs.highlight
+        self.highlight_time: float = self.configs.highlight_time
+        self.language: str = self.configs.language
 
         self.robot: BuiltIn
         self.sikuli: SikuliLibrary
 
-
     def start_suite(self, data, result):
-        self._bootstrap()
+        self.robot = BuiltIn()
+
+        console(f"{self.configs}")
+        try:
+            self.sikuli = self.robot.get_library_instance("SikuliLibrary")
+        except RuntimeError:
+            self.robot.import_library("SikuliLibrary", "mode=NEW")
+            self.sikuli = self.robot.get_library_instance("SikuliLibrary")
+            self.sikuli.start_sikuli_process()
 
     def close(self):
-        self._shutdown()
+        with open(os.devnull, "w") as _, redirect_stdout(_):
+            self.sikuli.run_keyword("stop_remote_server")
