@@ -94,4 +94,5 @@ class VisionMixin:
             time.sleep(min(polling_inverval, deadline - now))
 
         remaning_images = [img for img, found in status.items() if not found]
-        raise AssertionError(f"Timed out after {timeout:.2f}s waiting for all images to be present. " f"The following images still missing: {remaning_images}.")
+        raise TimeoutError(f"Timed out after {timeout:.2f}s waiting for all images to be present. " f"The following images still missing: {remaning_images}.")
+
