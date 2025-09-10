@@ -1,5 +1,5 @@
-similarity = 1.0
-vision_timeout = 5
+similarity = 0.7
+vision_timeout = 1
 action_speed = 0.1
 highlight = true
 highlight_time = 2
