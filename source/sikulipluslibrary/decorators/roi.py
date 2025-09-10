@@ -1,40 +1,40 @@
 from functools import wraps
 from inspect import signature, Parameter
+from .helper import _add_parameters_to_function
 
-# TODO:  Deixar as exceções mais claras de quem causou e porque 
-def with_roi(func):
+# TODO: compartilhar o mesmo tempo de timeout original e não duplicar.
+# TODO:  Deixar as exceções mais claras de quem causou e porque
+def roi_parameter(func):
     original_signature = signature(func)
-    original_parameters = list(original_signature.parameters.values())
+    
+    roi_parameter = Parameter("roi", kind=Parameter.KEYWORD_ONLY, default=None, annotation=str | list[int])
+    new_function = _add_parameters_to_function(func, roi_parameter)
 
-    new_parameter = [Parameter("roi", kind=Parameter.KEYWORD_ONLY, default=None, annotation=list[int] | str)]
-    new_signature = original_signature.replace(parameters=original_parameters + new_parameter)
-
-    @wraps(func)
+    @wraps(new_function)
     def decorator(self, *args, **kwargs):
-        roi = kwargs.pop("roi", None)
+        roi_arg = kwargs.pop("roi", None)
 
-        if roi is not None:
-            if isinstance(roi, str):
-                timeout = args[1]
-                self.sikuli.run_keyword("Wait Until Screen Contain", [roi, timeout])
-                
-                roi = self.sikuli.run_keyword("Get Image Coordinates", [roi])
-                print(f"Roi image cordinates: {roi}")
-
-            self.sikuli.run_keyword("Set Roi", [roi])
+        bound_args = original_signature.bind(self, *args, **kwargs)
+        bound_args.apply_defaults()
         
+        timeout = bound_args.arguments["timeout"]
+        
+        def roi_helper(roi, timeout):
+            if isinstance(roi, str):
+                self.sikuli.run_keyword("Wait Until Screen Contain", [roi, timeout])
+                roi_cordinates = self.sikuli.run_keyword("Get Image Coordinates", [roi])
+                print(f"Roi image cordinates: {roi_cordinates}")
+
+            self.sikuli.run_keyword("Set Roi", [roi_cordinates])
+            
         try:
-            result = func(self, *args, **kwargs)
+            if roi_arg is not None:
+                roi_helper(roi_arg, timeout)
+
+            result = new_function(self, *args, **kwargs)
         finally:
             self.sikuli.run_keyword("Reset Roi")
 
         return result
 
-    # Adicionar float ao tipo similarity
-    anns = dict(getattr(func, "__annotations__", {}))
-    anns["roi"] = list[int] | str
-    decorator.__annotations__ = anns
-
-    # Adicionar assiantura nova
-    setattr(decorator, "__signature__", new_signature)
     return decorator
