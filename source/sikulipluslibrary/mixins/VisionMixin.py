@@ -1,10 +1,10 @@
+import time
+from robot.libraries.BuiltIn import BuiltIn
+from SikuliLibrary import SikuliLibrary
 from robot.api.deco import keyword
 from SikuliPlusLibrary.decorators.similarity import similarity_parameter
 from SikuliPlusLibrary.decorators.roi import roi_parameter
-from SikuliPlusLibrary.decorators.timeout import override_timeout
-from robot.libraries.BuiltIn import BuiltIn
-from SikuliLibrary import SikuliLibrary
-import time
+from SikuliPlusLibrary.decorators.timeout import override_timeout_parameter
 
 
 class VisionMixin:
@@ -12,38 +12,46 @@ class VisionMixin:
         self.robot: BuiltIn
         self.sikuli: SikuliLibrary
 
+    @roi_parameter
+    @similarity_parameter
+    @override_timeout_parameter
     @keyword
-    def wait_until_image_appear(self, image: str, timeout: float = 5):
+    def wait_until_image_appear(self, image: str, timeout: float):
         self.sikuli.run_keyword("Wait Until Screen Contain", [image, timeout])
 
+    @similarity_parameter
     @keyword
-    def wait_until_image_dissapear(self, image: str, timeout: float = 5):
+    def wait_until_image_dissapear(self, image: str, timeout: float):
         self.sikuli.run_keyword("Wait Until Screen Not Contain", [image, timeout])
 
+    @similarity_parameter
     @keyword
-    def count_image(self, image: str, timeout: float = 5) -> int:
+    def count_image(self, image: str, timeout: float) -> int:
         self.sikuli.run_keyword("Exists", [image, timeout])
 
         result = self.sikuli.run_keyword("Image Count", [image])
 
-        return result # type: ignore
+        return result  # type: ignore
 
+    @similarity_parameter
     @keyword
-    def count_multiple_images(self, *images: str, timeout: float = 5) -> dict[str, int]:
+    def count_multiple_images(self, *images: str, timeout: float) -> dict[str, int]:
         self.multiple_images_exists(*images, timeout=timeout)
 
         images_counts: dict[str, int] = {}
         for img in images:
-            images_counts[img] = self.sikuli.run_keyword("Image Count", [img]) # type: ignore
+            images_counts[img] = self.sikuli.run_keyword("Image Count", [img])  # type: ignore
         return images_counts
 
+    @similarity_parameter
     @keyword
-    def image_exists(self, image: str, timeout: float = 5) -> bool:
+    def image_exists(self, image: str, timeout: float) -> bool:
         result = self.sikuli.run_keyword("Exists", [image, timeout])
-        return result # type: ignore
-
+        return result  # type: ignore
+    
+    @similarity_parameter
     @keyword
-    def multiple_images_exists(self, *images: str, timeout: float = 5) -> dict[str, bool]:
+    def multiple_images_exists(self, *images: str, timeout: float) -> dict[str, bool]:
         polling_inverval = 1.0
         deadline = time.monotonic() + timeout
 
@@ -66,14 +74,16 @@ class VisionMixin:
                 return status
 
             time.sleep(min(polling_inverval, deadline - now))
-    
+
+    @similarity_parameter
     @keyword
-    def wait_one_of_multiple_images(self, *images: str, timeout: float = 5) -> str:
+    def wait_one_of_multiple_images(self, *images: str, timeout: float) -> str:
         image_found = self.sikuli.run_keyword("Wait For Multiple Images", [timeout, 1, images, []])
         return image_found  # type: ignore
 
+    @similarity_parameter
     @keyword
-    def wait_multiple_images(self, *images: str, timeout: float = 5):
+    def wait_multiple_images(self, *images: str, timeout: float):
         polling_inverval = 1.0
         deadline = time.monotonic() + timeout
 
@@ -95,4 +105,3 @@ class VisionMixin:
 
         remaning_images = [img for img, found in status.items() if not found]
         raise TimeoutError(f"Timed out after {timeout:.2f}s waiting for all images to be present. " f"The following images still missing: {remaning_images}.")
-
