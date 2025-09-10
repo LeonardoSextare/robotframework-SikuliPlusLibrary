@@ -1,32 +1,34 @@
 from functools import wraps
-from inspect import signature, Parameter
-from typing import Optional
+from inspect import Parameter
+from .helper import _add_parameters_to_function
+from SikuliPlusLibrary.Settings import get_settings
 
 # TODO:  Deixar as exceções mais claras
-def with_similarity(func):
-    original_signature = signature(func)
-    original_parameters = list(original_signature.parameters.values())
+def similarity_parameter(func):
+    default_similarity = get_settings().similarity
+    similarity_param = Parameter(
+        "similarity",
+        kind=Parameter.KEYWORD_ONLY,
+        default=default_similarity,
+        annotation=float,
+    )
 
-    new_parameter = [Parameter("similarity", kind=Parameter.KEYWORD_ONLY, default=None, annotation=float)]
-    new_signature = original_signature.replace(parameters=original_parameters + new_parameter)
+    new_function = _add_parameters_to_function(func, similarity_param)
 
-    @wraps(func)
+    @wraps(new_function)
     def decorator(self, *args, **kwargs):
-        similarity = kwargs.pop("similarity", None)
-        if similarity is None:
-            similarity = self.global_similarity
+        similarity = kwargs.pop("similarity", default_similarity)
 
-        self.sikuli.run_keyword("Set Min Similarity", [similarity])
         try:
-            result = func(self, *args, **kwargs)
+            self.sikuli.run_keyword("Set Min Similarity", [similarity])
+            result = new_function(self, *args, **kwargs)
         finally:
-            self.sikuli.run_keyword("Set Min Similarity", [self.global_similarity])
+            self.sikuli.run_keyword("Set Min Similarity", [default_similarity])
 
         return result
 
-    anns = dict(getattr(func, "__annotations__", {}))
-    anns["similarity"] = float
-    decorator.__annotations__ = anns
+    # Propaga assinatura/annotations do inner (já enriquecidas)
+    # wrapper.__signature__ = signature(func_with_sig)
+    # wrapper.__annotations__ = dict(getattr(func_with_sig, "__annotations__", {}))
 
-    setattr(decorator, "__signature__", new_signature)
     return decorator
