@@ -8,7 +8,7 @@ from robot.api.deco import library, keyword
 import os
 from contextlib import redirect_stdout
 
-from .config import load_config, Config, ConfigError
+from .config import load_config, Config
 
 
 @library(scope="GLOBAL", version="0.1.0")
