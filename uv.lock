@@ -3,21 +3,6 @@ revision = 2
 requires-python = ">=3.13"
 
 [[package]]
-name = "inovarobotsikuli"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "robotframework" },
-    { name = "robotframework-sikulilibrary" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "robotframework", specifier = ">=7.3.2" },
-    { name = "robotframework-sikulilibrary", specifier = ">=2.0.5" },
-]
-
-[[package]]
 name = "robotframework"
 version = "7.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -34,3 +19,26 @@ sdist = { url = "https://files.pythonhosted.org/packages/96/40/a132305558e9a2fd1
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/77/4e010de3744218347d835ade9bdc357c162a7c0710e3d0c980e0510a9786/robotframework_sikulilibrary-2.0.5-py3-none-any.whl", hash = "sha256:9805259eeb6504f2a8faae24958df90f9dab5f8d354fda70be056b5233693f12", size = 151642325, upload-time = "2025-08-07T23:38:28.076Z" },
 ]
+
+[[package]]
+name = "sikulipluslibrary"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "robotframework" },
+    { name = "robotframework-sikulilibrary" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "sikulipluslibrary" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "robotframework", specifier = ">=7.3.2" },
+    { name = "robotframework-sikulilibrary", specifier = ">=2.0.5" },
+]
+
+[package.metadata.requires-dev]
+dev = [{ name = "sikulipluslibrary", editable = "." }]
