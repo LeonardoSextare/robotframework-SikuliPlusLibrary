@@ -27,8 +27,4 @@ def similarity_parameter(func):
 
         return result
 
-    # Propaga assinatura/annotations do inner (já enriquecidas)
-    # wrapper.__signature__ = signature(func_with_sig)
-    # wrapper.__annotations__ = dict(getattr(func_with_sig, "__annotations__", {}))
-
     return decorator

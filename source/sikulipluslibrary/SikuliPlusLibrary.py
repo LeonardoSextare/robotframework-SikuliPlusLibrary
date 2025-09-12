@@ -2,7 +2,7 @@ from robot.libraries.BuiltIn import BuiltIn
 from SikuliLibrary import SikuliLibrary
 from robot.api.deco import library
 from robot.api.logger import console
-from .mixins import VisionMixin
+from .mixins import VisionMixin, MouseMixin, KeyboardMixin
 import os
 from contextlib import redirect_stdout
 
@@ -10,7 +10,7 @@ from .Settings import Settings, get_settings
 
 
 @library(scope="GLOBAL", version="0.1.0")
-class SikuliPlusLibrary(VisionMixin):
+class SikuliPlusLibrary(VisionMixin, MouseMixin, KeyboardMixin):
 
     def __init__(self, config_file="auto") -> None:
         self.ROBOT_LIBRARY_LISTENER = self  # Estudar
@@ -38,6 +38,7 @@ class SikuliPlusLibrary(VisionMixin):
             self.robot.import_library("SikuliLibrary", "mode=NEW")
             self.sikuli = self.robot.get_library_instance("SikuliLibrary")
             self.sikuli.start_sikuli_process()
+        
 
     def close(self):
         with open(os.devnull, "w") as _, redirect_stdout(_):
