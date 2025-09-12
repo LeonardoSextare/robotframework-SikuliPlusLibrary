@@ -1,0 +1,19 @@
+from robot.api.deco import keyword
+from robot.libraries.BuiltIn import BuiltIn
+from SikuliLibrary import SikuliLibrary
+
+
+class KeyboardMixin:
+    def __init__(self) -> None:
+        self.robot: BuiltIn
+        self.sikuli: SikuliLibrary
+
+    def type_text(self, text: str, delay: float = 0.1): ...
+    def paste_text(self, text: str): ...
+
+    def press_key(self, key: str, times: int = 1): ...
+    def press_keys_in_sequence(self, *keys: str, interval: float = 0.1): ...
+    def press_combinated_keys(self, *keys: str): ...
+
+    def hold_keyboard_key(self, *keys: str): ...
+    def release_keyboard_key(self, *keys: str): ...  # Verificar sem nenhum botão
