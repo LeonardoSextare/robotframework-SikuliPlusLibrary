@@ -2,164 +2,29 @@
   // VSCode
   "explorer.compactFolders": false,
   "editor.rulers": [120, 160],
-  // "files.exclude": {
-  //   "**/*.pyc": {
-  //     "when": "$(basename).py"
-  //   },
-  //   "**/__pycache__": true,
-  //   "**/*.pytest_cache": true,
-  //   "**/Sikuli_java**": true
-  // },
-  "files.associations": {
-    "*.robocop": "toml",
-    "*.robotidy": "toml"
+  "files.exclude": {
+    "**/*.pyc": {
+      "when": "$(basename).py"
+    },
+    "**/__pycache__": true,
+    "**/*.pytest_cache": true,
+    "**/Sikuli_java**": true
   },
+
   // "terminal.integrated.env.windows": {
   //   "PYTHONPATH": "${workspaceFolder}"
   // },
+
   "workbench.colorCustomizations": {
     "editorInfo.foreground": "#006eff", 
     "editorError.foreground": "#F00",
     "editorWarning.foreground": "#ffa23e"
   },
 
-  // Code Runner
-  "code-runner.clearPreviousOutput": true,
-  "code-runner.ignoreSelection": true,
-  "code-runner.runInTerminal": true,
-  "code-runner.executorMap": {
-    "python": "cls ; python -u",
-    "powershell": "cls ; powershell -ExecutionPolicy ByPass -File"
-  },
-  "code-runner.executorMapByFileExtension": {
-    ".robot": "cls ; robot --argumentfile .\\argumentos_cli.cfg"
-  },
-
-  // Python
   // "python.defaultInterpreterPath": "${workspaceFolder}\\.vscode\\.venv\\Scripts\\python.exe",
   "python.experiments.optInto": ["pythonTerminalEnvVarActivation"],
 
   // Black Formatter Python
   "black-formatter.args": ["--line-length=160"],
 
-  // RobotCode
-  // "robotcode.robot.languages": [".\\config\\PTBR_InovaRobot.py"],
-  // "robotcode.robot.variableFiles": [".\\config\\variaveis_globais.py"],
-  "robotcode.testExplorer.enabled": false,
-  // "robotcode.robot.pythonPath": ["."],
-  "robotcode.analysis.diagnosticMode": "workspace",
-  "robotcode.analysis.progressMode": "detailed",
-  // "robotcode.analysis.diagnosticModifiers.warning": [
-  //   "PossibleCircularImport",
-  //   "VariableOverridden"
-  // ],
-  // "robotcode.analysis.diagnosticModifiers.ignore": [
-  //   // "KeywordNotUsed",
-  //   // "KeywordNotFound",
-  //   "VariableNotUsed",
-  //   "ModelError",
-  //   "DeprecatedKeyword",
-  //   "DeprecatedHeader",
-  //   "VariableAlreadyDefined",
-  //   "ResourceAlreadyImported",
-  //   "LibraryAlreadyImported",
-  //   "VariablesAlreadyImported",
-  //   "TokenError",
-  //   "KeywordNameEmpty",
-  //   "DeprecatedReturnSetting"
-  // ],
-  // "robotcode.robocop.enabled": true,
-  // "robotcode.robocop.configFile": ".\\config\\robocop.toml",
-  "robotcode.analysis.referencesCodeLens": true,
-  "robotcode.analysis.findUnusedReferences": true,
-
-  // Material Icon Theme
-  // "material-icon-theme.folders.associations": {
-  //   "recursos": "recursos",
-  //   "dados": "dados",
-  //   "imagens": "imagens",
-  //   "keywords": "keywords",
-  //   "variaveis": "variaveis",
-  //   "modulos": "pasta_modulos",
-  //   "modulos/InovaFarma": "modulos",
-  //   "modulos/InovaFarmaService": "modulos",
-  //   "modulos/InovaRobot": "modulos",
-  //   "suites": "pasta_suites",
-  //   "suites/Cadastros": "suites",
-  //   "suites/Compras": "suites",
-  //   "suites/CurvaABC": "suites",
-  //   "suites/ElloMais": "suites",
-  //   "suites/Facillite": "suites",
-  //   "suites/FarmaciaPopular": "suites",
-  //   "suites/FuncionalCard": "suites",
-  //   "suites/FuncionalCardApi": "suites",
-  //   "suites/LimiteCredito": "suites",
-  //   "suites/LinkedFarma": "suites",
-  //   "suites/Marka": "suites",
-  //   "suites/MasterFarma": "suites",
-  //   "suites/Ofertas": "suites",
-  //   "suites/Orizon": "suites",
-  //   "suites/PecFebrafar": "suites",
-  //   "suites/Pedidos": "suites",
-  //   "suites/Transferencia": "suites",
-  //   "suites/VendasBase": "suites",
-  //   "suites/VendasOnline": "suites",
-  //   "suites/WebConvenios": "suites"
-  // },
-//   "material-icon-theme.folders.customClones": [
-//     {
-//       "name": "recursos",
-//       "base": "components",
-//       "color": "brown-600",
-//       "folderNames": []
-//     },
-//     {
-//       "name": "dados",
-//       "base": "docs",
-//       "color": "red-500",
-//       "folderNames": []
-//     },
-//     {
-//       "name": "imagens",
-//       "base": "images",
-//       "color": "purple-500",
-//       "folderNames": []
-//     },
-//     {
-//       "name": "keywords",
-//       "base": "core",
-//       "color": "teal-A700",
-//       "folderNames": []
-//     },
-//     {
-//       "name": "variaveis",
-//       "base": "json",
-//       "color": "orange",
-//       "folderNames": []
-//     },
-//     {
-//       "name": "pasta_modulos",
-//       "base": "webpack",
-//       "color": "blue-700",
-//       "folderNames": []
-//     },
-//     {
-//       "name": "modulos",
-//       "base": "folder",
-//       "color": "blue-600",
-//       "folderNames": []
-//     },
-//     {
-//       "name": "pasta_suites",
-//       "base": "test",
-//       "color": "cyan-600",
-//       "folderNames": []
-//     },
-//     {
-//       "name": "suites",
-//       "base": "folder",
-//       "color": "cyan-500",
-//       "folderNames": []
-//     }
-//   ]
 }
