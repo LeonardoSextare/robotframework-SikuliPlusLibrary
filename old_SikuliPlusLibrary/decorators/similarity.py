@@ -1,7 +1,7 @@
 from functools import wraps
 from inspect import Parameter
 from .helper import _add_parameters_to_function
-from SikuliPlusLibrary.Settings import get_settings
+from old_SikuliPlusLibrary.Settings import get_settings
 
 # TODO:  Deixar as exceções mais claras
 def similarity_parameter(func):

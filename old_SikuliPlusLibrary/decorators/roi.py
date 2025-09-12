@@ -1,7 +1,7 @@
 from functools import wraps
 from inspect import signature, Parameter
 from .helper import _add_parameters_to_function
-from SikuliPlusLibrary.Settings import get_settings
+from old_SikuliPlusLibrary.Settings import get_settings
 import time
 
 # TODO: compartilhar o mesmo tempo de timeout original e não duplicar.
