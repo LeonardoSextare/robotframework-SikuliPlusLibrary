@@ -2,9 +2,9 @@ import time
 from robot.libraries.BuiltIn import BuiltIn
 from SikuliLibrary import SikuliLibrary
 from robot.api.deco import keyword
-from SikuliPlusLibrary.decorators.similarity import similarity_parameter
-from SikuliPlusLibrary.decorators.roi import roi_parameter
-from SikuliPlusLibrary.decorators.timeout import override_timeout_parameter
+from old_SikuliPlusLibrary.decorators.similarity import similarity_parameter
+from old_SikuliPlusLibrary.decorators.roi import roi_parameter
+from old_SikuliPlusLibrary.decorators.timeout import override_timeout_parameter
 
 
 class VisionMixin:
