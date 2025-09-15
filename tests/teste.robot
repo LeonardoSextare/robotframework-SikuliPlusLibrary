@@ -11,18 +11,9 @@ ${imagens}=    ${EXECDIR}\\tests\\imagens
 *** Test Cases ***
 Teste
     Change Screen Id     1
+    # Highlight    ${imagens}\\txt_transferencia.png    2
+    # Set Roi    ${regiao}    5
+    # Log To Console     tESTE    
+    Wait Until Image Appear    ${imagens}\\txt_transferencia.png     similarity=0.7    roi=${imagens}\\inovafarma.png
+    # Count Multiple Images    ${imagens}\\txt_transferencia.png    ${imagens}\\inovafarma.png
     
-    # Wait Until Image Appear     ${imagens}\\txt_transferencia.png    roi=${imagens}\\inovafarma.png
-    # Sleep    1
-    # Wait Until Image Dissapear  ${imagens}\\txt_transferencia.png    roi=${imagens}\\inovafarma.png
-    
-    Count Multiple Images    ${imagens}\\txt_transferencia.png    ${imagens}\\inovafarma.png
-    
-    # Image Exists        ${imagens}\\txt_transferencia.png
-
-    # Wait One Of Multiple Images    ${imagens}\\txt_transferencia.png
-    # Change Screen Id    1
-    # Count Image    ${imagens}\\txt_transferencia.png
-    # Count Multiple Images   ${imagens}\\txt_transferencia.png     ${imagens}\\txt_transferencia.png     ${imagens}\\inovafarma.png     ${imagens}\\btn_vendas.png
-
-    # Wait Until Screen Contain    ${imagens}\\txt_transferencia.png    3
