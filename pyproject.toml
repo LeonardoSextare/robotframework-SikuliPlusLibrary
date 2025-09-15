@@ -21,6 +21,7 @@ action_speed = 0.1
 highlight = true
 highlight_time = 2.0
 language = "pt_BR"
+screen_id = 1
 
 [tool.uv.sources]
 sikulipluslibrary = { workspace = true }

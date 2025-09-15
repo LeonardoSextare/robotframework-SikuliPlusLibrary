@@ -67,8 +67,50 @@ class SikuliPlusLibrary:
             self.sikuli.start_sikuli_process()
 
         self.sikuli.run_keyword("Set Min Similarity", [self.config.similarity])
+
+        # Configure screen monitor
+        self._configure_monitor()
+
         # instantiate service objects that depend on a live SikuliLibrary
         self.vision = VisionModule(self.sikuli, self.config)
+
+    def _configure_monitor(self) -> None:
+        """Configure the screen monitor based on config.screen_id.
+
+        Validates that the configured screen_id exists using Get Number Of Screens,
+        changes to the specified screen, and shows a highlight flash to indicate
+        which monitor is active.
+
+        Raises:
+            ValueError: If the configured screen_id doesn't exist.
+        """
+        # Get total number of screens
+        total_screens: int = self.sikuli.run_keyword("Get Number Of Screens")  # type: ignore
+
+        # Validate screen_id exists
+        if self.config.screen_id >= total_screens:
+            raise ValueError(f"Invalid screen_id {self.config.screen_id}. " f"Available screens: 0 to {total_screens - 1} (total: {total_screens})")
+
+        # Change to the configured screen
+        self.sikuli.run_keyword("Change Screen Id", [self.config.screen_id])
+
+        # Show visual feedback if highlights are enabled
+        if self.config.highlight:
+            # Suppress SikuliX logs during highlight operations
+            with open(os.devnull, "w") as _, redirect_stdout(_):
+                roi_image = self.sikuli.run_keyword("Capture ROI")
+
+                coordinates: List[int] = self.sikuli.run_keyword("Get Image Coordinates", [roi_image])  # type: ignore
+
+                margin = 3
+                adjusted_coordinates = [
+                    coordinates[0] + margin,  # x + margin
+                    coordinates[1] + margin,  # y + margin
+                    coordinates[2] - (2 * margin),  # width - 2*margin
+                    coordinates[3] - (2 * margin),  # height - 2*margin
+                ]
+
+                self.sikuli.run_keyword("Highlight Region", [adjusted_coordinates, 1])
 
     def close(self):
         """Robot Framework listener invoked when the library is closed.
@@ -80,7 +122,6 @@ class SikuliPlusLibrary:
             with open(os.devnull, "w") as _, redirect_stdout(_):
                 self.sikuli.run_keyword("stop_remote_server")
         except Exception:
-            # best-effort - ignore errors during shutdown
             pass
 
     # --- Vision keywords (skeletons copied from VisionMixin signatures) ---
@@ -94,13 +135,13 @@ class SikuliPlusLibrary:
         roi: Optional[Union[str, List[int]]] = None,
     ):
         """Wait until the specified image appears on screen.
-        
+
         Args:
             image: Path to the image file to wait for
             timeout: Maximum time to wait in seconds (has config default)
             similarity: Image matching precision 0.0-1.0 (has config default)
             roi: Region of Interest - either image path or coordinates [x, y, w, h] (can be None)
-        
+
         Note:
             timeout and similarity are guaranteed to have values by signature_utils.
         """

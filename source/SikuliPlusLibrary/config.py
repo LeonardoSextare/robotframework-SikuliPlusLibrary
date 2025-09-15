@@ -19,6 +19,7 @@ class Config:
     highlight: bool = True
     highlight_time: float = 2.0
     language: str = "pt_BR"
+    screen_id: int = 0
 
 
 def _read_toml_file(path: str) -> Dict[str, Any]:
@@ -69,6 +70,8 @@ def _coerce_types(raw: Dict[str, Any]) -> Dict[str, Any]:
                 out["highlight_time"] = float(raw_value)
             case "language":
                 out["language"] = str(raw_value)
+            case "screen_id" | "screenid":
+                out["screen_id"] = int(raw_value)
             case _:
                 out[key_name] = raw_value
     return out
@@ -146,6 +149,11 @@ def load_config(
         if not (0.0 <= sim <= 1.0):
             raise ConfigError("'similarity' must be between 0.0 and 1.0")
 
+    if "screen_id" in merged:
+        screen_id = int(merged["screen_id"])
+        if screen_id < 0:
+            raise ConfigError("'screen_id' must be >= 0")
+
     return Config(
         similarity=float(merged.get("similarity", defaults["similarity"])),
         timeout=float(merged.get("timeout", defaults["timeout"])),
@@ -153,4 +161,5 @@ def load_config(
         highlight=bool(merged.get("highlight", defaults["highlight"])),
         highlight_time=float(merged.get("highlight_time", defaults["highlight_time"])),
         language=str(merged.get("language", defaults["language"])),
+        screen_id=int(merged.get("screen_id", defaults["screen_id"])),
     )

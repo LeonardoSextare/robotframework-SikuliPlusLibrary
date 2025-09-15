@@ -1,6 +1,5 @@
 *** Settings ***
 Library     SikuliPlusLibrary
-Library     SikuliLibrary
 
 
 *** Variables ***
@@ -10,10 +9,15 @@ ${imagens}=    ${EXECDIR}\\tests\\imagens
 
 *** Test Cases ***
 Teste
-    Change Screen Id     1
-    # Highlight    ${imagens}\\txt_transferencia.png    2
+    # ${roi}=    Capture Roi
     # Set Roi    ${regiao}    5
-    Log To Console     tESTE    
-    Wait Until Image Appear    ${imagens}\\txt_transferencia.png     similarity=0.7    roi=${imagens}\\inovafarma.png
+    # Log To Console     ${roi}
+
+    # ${teste}=    Get Image Coordinates    ${roi}
+    Log To Console     teste
+    # [-1920, 376, 1920, 1080]
+    
+    # Highlight Region    ${teste}    1
+    # Wait Until Image Appear    ${imagens}\\txt_transferencia.png     similarity=0.7    roi=${imagens}\\inovafarma.png
     # Count Multiple Images    ${imagens}\\txt_transferencia.png    ${imagens}\\inovafarma.png
     
