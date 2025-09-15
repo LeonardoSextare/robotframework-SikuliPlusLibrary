@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional, Union, List, Dict
+import inspect
 
 from robot.libraries.BuiltIn import BuiltIn
 from SikuliLibrary import SikuliLibrary
@@ -9,6 +10,8 @@ import os
 from contextlib import redirect_stdout
 
 from .config import load_config, Config
+from .signature_utils import update_methods_defaults
+from .modules.vision import VisionModule
 
 
 @library(scope="GLOBAL", version="0.1.0")
@@ -26,9 +29,24 @@ class SikuliPlusLibrary:
         self.ROBOT_LISTENER_API_VERSION = 3
 
         self.config: Config = load_config(config_path)
-        
+
         self.robot: BuiltIn
         self.sikuli: SikuliLibrary
+
+        # Update vision keywords defaults from config using explicit mapping
+        update_methods_defaults(
+            self,
+            {
+                "wait_until_image_appear": {"timeout": self.config.timeout, "similarity": self.config.similarity},
+                "wait_until_image_dissapear": {"timeout": self.config.timeout, "similarity": self.config.similarity},
+                "count_image": {"timeout": self.config.timeout, "similarity": self.config.similarity},
+                "count_multiple_images": {"timeout": self.config.timeout, "similarity": self.config.similarity},
+                "image_exists": {"timeout": self.config.timeout, "similarity": self.config.similarity},
+                "multiple_images_exists": {"timeout": self.config.timeout, "similarity": self.config.similarity},
+                "wait_one_of_multiple_images": {"timeout": self.config.timeout, "similarity": self.config.similarity},
+                "wait_multiple_images": {"timeout": self.config.timeout, "similarity": self.config.similarity},
+            },
+        )
 
     def start_suite(self, data, result):
         """Robot Framework listener invoked when a test suite starts.
@@ -47,6 +65,9 @@ class SikuliPlusLibrary:
             self.robot.import_library("SikuliLibrary", "mode=NEW")
             self.sikuli = self.robot.get_library_instance("SikuliLibrary")
             self.sikuli.start_sikuli_process()
+
+        # instantiate service objects that depend on a live SikuliLibrary
+        self.vision = VisionModule(self.sikuli, self.config)
 
     def close(self):
         """Robot Framework listener invoked when the library is closed.
@@ -70,7 +91,7 @@ class SikuliPlusLibrary:
         roi: Optional[Union[str, List[int]]] = None,
         similarity: Optional[float] = None,
     ):
-        raise NotImplementedError("wait_until_image_appear is not implemented yet")
+        return self.vision.wait_until_image_appear(image, timeout=timeout, roi=roi, similarity=similarity)
 
     @keyword
     def wait_until_image_dissapear(
@@ -80,7 +101,7 @@ class SikuliPlusLibrary:
         roi: Optional[Union[str, List[int]]] = None,
         similarity: Optional[float] = None,
     ):
-        raise NotImplementedError("wait_until_image_dissapear is not implemented yet")
+        return self.vision.wait_until_image_dissapear(image, timeout=timeout, roi=roi, similarity=similarity)
 
     @keyword
     def count_image(
@@ -90,7 +111,7 @@ class SikuliPlusLibrary:
         roi: Optional[Union[str, List[int]]] = None,
         similarity: Optional[float] = None,
     ) -> int:
-        raise NotImplementedError("count_image is not implemented yet")
+        return self.vision.count_image(image, timeout=timeout, roi=roi, similarity=similarity)
 
     @keyword
     def count_multiple_images(
@@ -100,7 +121,7 @@ class SikuliPlusLibrary:
         roi: Optional[Union[str, List[int]]] = None,
         similarity: Optional[float] = None,
     ) -> Dict[str, int]:
-        raise NotImplementedError("count_multiple_images is not implemented yet")
+        return self.vision.count_multiple_images(*images, timeout=timeout, roi=roi, similarity=similarity)
 
     @keyword
     def image_exists(
@@ -110,7 +131,7 @@ class SikuliPlusLibrary:
         roi: Optional[Union[str, List[int]]] = None,
         similarity: Optional[float] = None,
     ) -> bool:
-        raise NotImplementedError("image_exists is not implemented yet")
+        return self.vision.image_exists(image, timeout=timeout, roi=roi, similarity=similarity)
 
     @keyword
     def multiple_images_exists(
@@ -120,7 +141,7 @@ class SikuliPlusLibrary:
         roi: Optional[Union[str, List[int]]] = None,
         similarity: Optional[float] = None,
     ) -> Dict[str, bool]:
-        raise NotImplementedError("multiple_images_exists is not implemented yet")
+        return self.vision.multiple_images_exists(*images, timeout=timeout, roi=roi, similarity=similarity)
 
     @keyword
     def wait_one_of_multiple_images(
@@ -130,7 +151,7 @@ class SikuliPlusLibrary:
         roi: Optional[Union[str, List[int]]] = None,
         similarity: Optional[float] = None,
     ) -> str:
-        raise NotImplementedError("wait_one_of_multiple_images is not implemented yet")
+        return self.vision.wait_one_of_multiple_images(*images, timeout=timeout, roi=roi, similarity=similarity)
 
     @keyword
     def wait_multiple_images(
@@ -140,4 +161,4 @@ class SikuliPlusLibrary:
         roi: Optional[Union[str, List[int]]] = None,
         similarity: Optional[float] = None,
     ):
-        raise NotImplementedError("wait_multiple_images is not implemented yet")
+        return self.vision.wait_multiple_images(*images, timeout=timeout, roi=roi, similarity=similarity)
