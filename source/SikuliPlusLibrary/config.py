@@ -12,6 +12,7 @@ class ConfigError(Exception):
 
 @dataclass(frozen=True)
 class Config:
+    """Configuration dataclass for SikuliPlusLibrary with immutable default values."""
     similarity: float = 0.7
     timeout: float = 1.0
     action_speed: float = 0.1
@@ -98,6 +99,7 @@ def _find_config_file(provided: Optional[str] = None) -> Optional[str]:
 
 
 def merge_dicts(*dicts: Dict[str, Any]) -> Dict[str, Any]:
+    """Merge multiple dictionaries with later ones taking precedence."""
     result: Dict[str, Any] = {}
     for source_dict in dicts:
         if not source_dict:
@@ -111,12 +113,12 @@ def load_config(
     pyproject_path: str = "pyproject.toml",
     env_prefix: str = "SIKULIPLUS_",
 ) -> Config:
-    """Carrega a configuração com precedência:
+    """Load configuration with precedence:
     defaults <- pyproject.toml (tool.sikuliplus) <- config file (sikuli.toml|config.sikuli) <- env vars
     """
     defaults = Config().__dict__
 
-    # pyproject
+    # pyproject.toml section
     pyproject_raw = _read_toml_file(pyproject_path)
     pyproject_cfg = _extract_pyproject_section(pyproject_raw, "tool.sikuliplus")
     pyproject_cfg = _coerce_types(pyproject_cfg or {})
@@ -133,7 +135,7 @@ def load_config(
             file_cfg = file_raw
         file_cfg = _coerce_types(file_cfg or {})
 
-    # env
+    # environment variables
     env_cfg = _read_env(env_prefix)
 
     merged = merge_dicts(defaults, pyproject_cfg, file_cfg, env_cfg)

@@ -1,25 +1,47 @@
 from __future__ import annotations
 
-from typing import Optional, Union, List, Dict
+import time
+from typing import Optional, Union, List, Dict, Any
+
+from ..mixins import ContextManagerMixin
 
 
-class VisionModule:
-    """
-    TODO: implementar doctstring
+class VisionModule(ContextManagerMixin):
+    """Vision operations module for SikuliPlusLibrary.
+    
+    This module provides image recognition and manipulation capabilities
+    through the SikuliLibrary backend, with enhanced configuration management
+    and helper functions for common operations.
     """
 
     def __init__(self, sikuli, config) -> None:
         self.sikuli = sikuli
         self.config = config
 
+    # --- Vision Keywords ---
     def wait_until_image_appear(
         self,
         image: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        *,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ):
-        raise NotImplementedError("wait_until_image_appear is not implemented yet")
+        """Wait until the specified image appears on screen.
+        
+        Args:
+            image: Path to the image file to wait for
+            timeout: Maximum time to wait in seconds
+            roi: Region of Interest - either image path or coordinates [x, y, w, h] (can be None)
+            similarity: Image matching precision 0.0-1.0
+        
+        Note:
+            timeout and similarity are guaranteed to have values by signature_utils.
+            Only roi can legitimately be None (when no region restriction is desired).
+        """
+        with self._standard_context(similarity, roi, timeout) as add_highlight:
+            self.sikuli.run_keyword("Wait Until Screen Contain", [image, timeout])
+            add_highlight(image)
 
     def wait_until_image_dissapear(
         self,
@@ -42,9 +64,9 @@ class VisionModule:
     def count_multiple_images(
         self,
         *images: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ) -> Dict[str, int]:
         raise NotImplementedError("count_multiple_images is not implemented yet")
 
@@ -60,26 +82,99 @@ class VisionModule:
     def multiple_images_exists(
         self,
         *images: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ) -> Dict[str, bool]:
-        raise NotImplementedError("multiple_images_exists is not implemented yet")
+        """Check if multiple images exist with dynamic highlighting.
+        
+        This method polls for images and highlights them as they appear,
+        providing visual feedback during the search process.
+        """
+        polling_interval = 1.0
+        deadline = time.monotonic() + timeout
+
+        remaining_images = set(images)
+        status = {img: False for img in images}
+
+        with self._temporary_similarity(similarity):
+            with self._temporary_roi(roi, timeout):
+                with self._managed_highlights() as add_highlight:
+                    
+                    while True:
+                        # Check each remaining image
+                        for img in list(remaining_images):
+                            image_found = self.sikuli.run_keyword("Exists", [img])
+
+                            if image_found:
+                                status[img] = True
+                                remaining_images.discard(img)
+                                # Highlight immediately when found
+                                add_highlight(img)
+
+                        # Exit conditions
+                        if not remaining_images:
+                            return status
+
+                        now = time.monotonic()
+                        if now >= deadline:
+                            return status
+
+                        # Sleep before next poll
+                        time.sleep(min(polling_interval, deadline - now))
 
     def wait_one_of_multiple_images(
         self,
         *images: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ) -> str:
         raise NotImplementedError("wait_one_of_multiple_images is not implemented yet")
 
     def wait_multiple_images(
         self,
         *images: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ):
-        raise NotImplementedError("wait_multiple_images is not implemented yet")
+        """Wait for all specified images to appear with progressive highlighting.
+        
+        Highlights images as they appear and only completes when ALL images are found.
+        Raises TimeoutError if not all images are found within timeout.
+        """
+        polling_interval = 1.0
+        deadline = time.monotonic() + timeout
+
+        with self._standard_context(similarity, roi, timeout) as add_highlight:
+                    found_images = set()
+                    
+                    while True:
+                        # Check each image that hasn't been found yet
+                        for img in images:
+                            if img not in found_images:
+                                image_found = self.sikuli.run_keyword("Exists", [img])
+                                if image_found:
+                                    found_images.add(img)
+                                    # Highlight immediately when found
+                                    add_highlight(img)
+
+                        # Success: all images found
+                        if len(found_images) == len(images):
+                            return
+
+                        # Check timeout
+                        now = time.monotonic()
+                        if now >= deadline:
+                            break
+
+                        # Sleep before next poll
+                        time.sleep(min(polling_interval, deadline - now))
+
+                    # Timeout occurred
+                    missing_images = [img for img in images if img not in found_images]
+                    raise TimeoutError(
+                        f"Timed out after {timeout:.2f}s waiting for all images. "
+                        f"Missing images: {missing_images}"
+                    )

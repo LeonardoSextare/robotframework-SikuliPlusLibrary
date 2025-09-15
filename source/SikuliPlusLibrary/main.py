@@ -66,6 +66,7 @@ class SikuliPlusLibrary:
             self.sikuli = self.robot.get_library_instance("SikuliLibrary")
             self.sikuli.start_sikuli_process()
 
+        self.sikuli.run_keyword("Set Min Similarity", [self.config.similarity])
         # instantiate service objects that depend on a live SikuliLibrary
         self.vision = VisionModule(self.sikuli, self.config)
 
@@ -87,29 +88,43 @@ class SikuliPlusLibrary:
     def wait_until_image_appear(
         self,
         image: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        *,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ):
+        """Wait until the specified image appears on screen.
+        
+        Args:
+            image: Path to the image file to wait for
+            timeout: Maximum time to wait in seconds (has config default)
+            similarity: Image matching precision 0.0-1.0 (has config default)
+            roi: Region of Interest - either image path or coordinates [x, y, w, h] (can be None)
+        
+        Note:
+            timeout and similarity are guaranteed to have values by signature_utils.
+        """
         return self.vision.wait_until_image_appear(image, timeout=timeout, roi=roi, similarity=similarity)
 
     @keyword
     def wait_until_image_dissapear(
         self,
         image: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        *,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ):
-        return self.vision.wait_until_image_dissapear(image, timeout=timeout, roi=roi, similarity=similarity)
+        return self.vision.wait_until_image_dissapear(image, timeout=timeout, similarity=similarity, roi=roi)
 
     @keyword
     def count_image(
         self,
         image: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        *,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ) -> int:
         return self.vision.count_image(image, timeout=timeout, roi=roi, similarity=similarity)
 
@@ -117,9 +132,9 @@ class SikuliPlusLibrary:
     def count_multiple_images(
         self,
         *images: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ) -> Dict[str, int]:
         return self.vision.count_multiple_images(*images, timeout=timeout, roi=roi, similarity=similarity)
 
@@ -127,19 +142,20 @@ class SikuliPlusLibrary:
     def image_exists(
         self,
         image: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        *,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ) -> bool:
-        return self.vision.image_exists(image, timeout=timeout, roi=roi, similarity=similarity)
+        return self.vision.image_exists(image, timeout=timeout, similarity=similarity, roi=roi)
 
     @keyword
     def multiple_images_exists(
         self,
         *images: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ) -> Dict[str, bool]:
         return self.vision.multiple_images_exists(*images, timeout=timeout, roi=roi, similarity=similarity)
 
@@ -147,9 +163,9 @@ class SikuliPlusLibrary:
     def wait_one_of_multiple_images(
         self,
         *images: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ) -> str:
         return self.vision.wait_one_of_multiple_images(*images, timeout=timeout, roi=roi, similarity=similarity)
 
@@ -157,8 +173,8 @@ class SikuliPlusLibrary:
     def wait_multiple_images(
         self,
         *images: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ):
         return self.vision.wait_multiple_images(*images, timeout=timeout, roi=roi, similarity=similarity)

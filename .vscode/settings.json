@@ -15,6 +15,10 @@
   //   "PYTHONPATH": "${workspaceFolder}"
   // },
 
+  //Code Runner
+  "code-runner.executorMapByFileExtension": {
+    ".robot": "cls ; uv run robot -d logs --loglevel TRACE"
+  },
   "workbench.colorCustomizations": {
     "editorInfo.foreground": "#006eff", 
     "editorError.foreground": "#F00",
