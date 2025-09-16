@@ -1,0 +1,18 @@
+# English keyword names and documentation
+# File: en_US.toml
+
+[names]
+wait_until_image_appear = "Wait Until Image Appear"
+
+[docs]
+wait_until_image_appear = """Wait until the specified image appears on screen.
+
+Args:
+    image: Path to the image file to wait for
+    timeout: Maximum time to wait in seconds (has config default)
+    similarity: Image matching precision 0.0-1.0 (has config default)
+    roi: Region of Interest - either image path or coordinates [x, y, w, h] (can be None)
+
+Note:
+    timeout and similarity are guaranteed to have values by signature_utils.
+"""
