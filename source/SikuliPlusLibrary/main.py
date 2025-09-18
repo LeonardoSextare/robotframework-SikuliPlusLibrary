@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Optional, Union, List, Dict
-import inspect
 
 from robot.libraries.BuiltIn import BuiltIn
 from SikuliLibrary import SikuliLibrary
@@ -9,9 +8,10 @@ from robot.api.deco import library, keyword
 import os
 from contextlib import redirect_stdout
 
-from .config import load_config, Config
+from .config import Config
 from .signature_utils import update_methods_defaults
 from .modules.vision import VisionModule
+from .decorators import export_keyword
 
 
 @library(scope="GLOBAL", version="0.1.0")
@@ -23,12 +23,12 @@ class SikuliPlusLibrary:
     not silenced: a `ConfigError` will propagate so the user sees the problem.
     """
 
-    def __init__(self, config_path: Optional[str] = None) -> None:
+    def __init__(self, language: str = "en_US", **kwargs) -> None:
         # Make this object a Robot listener (keeps compatibility with older code)
         self.ROBOT_LIBRARY_LISTENER = self
         self.ROBOT_LISTENER_API_VERSION = 3
 
-        self.config: Config = load_config(config_path)
+        self.config: Config = Config.load_config(language=language, **kwargs)
 
         self.robot: BuiltIn
         self.sikuli: SikuliLibrary
@@ -125,7 +125,7 @@ class SikuliPlusLibrary:
             pass
 
     # --- Vision keywords (skeletons copied from VisionMixin signatures) ---
-    @keyword
+    @export_keyword('Wait Until Image Appear', docstring='')
     def wait_until_image_appear(
         self,
         image: str,

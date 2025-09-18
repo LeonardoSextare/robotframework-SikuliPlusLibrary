@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 import os
-import tomllib
 
 
 class ConfigError(Exception):
@@ -18,148 +17,183 @@ class Config:
     action_speed: float = 0.1
     highlight: bool = True
     highlight_time: float = 2.0
-    language: str = "pt_BR"
+    language: str = "en_US"
     screen_id: int = 0
 
-
-def _read_toml_file(path: str) -> Dict[str, Any]:
-    try:
-        with open(path, "rb") as f:
-            return tomllib.load(f) or {}
-    except FileNotFoundError:
-        return {}
-    except Exception as e:
-        raise ConfigError(f"Error reading '{path}': {e}") from e
-
-
-def _extract_pyproject_section(pyproject: Dict[str, Any], section: str = "tool.sikuliplus") -> Dict[str, Any]:
-    parts = section.split(".")
-    current: Any = pyproject
-    for part in parts:
-        if not isinstance(current, dict):
-            return {}
-        current = current.get(part, {})
-    return current.copy() if isinstance(current, dict) else {}
+    @classmethod
+    def from_kwargs(cls, **kwargs: Any) -> Dict[str, Any]:
+        """Create config dict from kwargs with type coercion and validation.
+        
+        Args:
+            **kwargs: Configuration parameters
+            
+        Returns:
+            Dict: Coerced and validated config values
+            
+        Raises:
+            ConfigError: If invalid values are provided
+        """
+        coerced = _coerce_types(kwargs)
+        _validate_config_values(coerced)
+        return coerced
+    
+    @classmethod
+    def from_environment(cls, prefix: str = "SIKULIPLUS_") -> Dict[str, Any]:
+        """Create config dict from environment variables.
+        
+        Args:
+            prefix: Environment variable prefix (default: SIKULIPLUS_)
+            
+        Returns:
+            Dict: Environment config values (coerced and validated)
+        """
+        out: Dict[str, Any] = {}
+        for env_name, env_value in os.environ.items():
+            if not env_name.startswith(prefix):
+                continue
+            key = env_name[len(prefix):].lower()
+            key = key.replace("-", "_")
+            out[key] = env_value
+        
+        return cls.from_kwargs(**out)
+    
+    @classmethod
+    def load_config(cls, language: str = "en_US", **kwargs: Any) -> Config:
+        """Load configuration with precedence: defaults < kwargs < environment.
+        
+        Args:
+            language: Language setting (default: en_US)
+            **kwargs: Additional configuration parameters
+            
+        Returns:
+            Config: Configured instance with proper precedence
+        """
+        # Start with defaults
+        defaults = cls().__dict__
+        
+        # Apply kwargs
+        kwargs_dict = cls.from_kwargs(language=language, **kwargs)
+        
+        # Apply environment (highest precedence)
+        env_dict = cls.from_environment("SIKULIPLUS_")
+        
+        # Merge with precedence: defaults < kwargs < environment
+        merged = {**defaults, **kwargs_dict, **env_dict}
+        
+        return cls(
+            similarity=float(merged["similarity"]),
+            timeout=float(merged["timeout"]),
+            action_speed=float(merged["action_speed"]),
+            highlight=bool(merged["highlight"]),
+            highlight_time=float(merged["highlight_time"]),
+            language=str(merged["language"]),
+            screen_id=int(merged["screen_id"]),
+        )
 
 
 def _coerce_types(raw: Dict[str, Any]) -> Dict[str, Any]:
+    """Coerce raw configuration values to proper types.
+    
+    Args:
+        raw: Raw configuration dictionary
+        
+    Returns:
+        Dict with properly typed values
+        
+    Raises:
+        ConfigError: If type coercion fails
+    """
+    # Simple mapping of exact key names to converter functions
+    TYPE_MAPPING = {
+        "similarity": float,
+        "timeout": float,
+        "action_speed": float,
+        "highlight": coerce_bool,
+        "highlight_time": float,
+        "language": str,
+        "screen_id": int,
+    }
+    
     out: Dict[str, Any] = {}
     for raw_key, raw_value in raw.items():
-        key_name = raw_key.lower()
-        match key_name:
-            case "similarity":
-                out["similarity"] = float(raw_value)
-            case "timeout" | "vision_timeout":
-                out["timeout"] = float(raw_value)
-            case "action_speed":
-                out["action_speed"] = float(raw_value)
-            case "highlight":
-                if isinstance(raw_value, bool):
-                    out["highlight"] = raw_value
-                elif isinstance(raw_value, str):
-                    lowered = raw_value.lower()
-                    if lowered == "true":
-                        out["highlight"] = True
-                    elif lowered == "false":
-                        out["highlight"] = False
-                    else:
-                        raise ConfigError("'highlight' must be 'true' or 'false' when provided as a string")
-                else:
-                    raise ConfigError("'highlight' must be a boolean (true/false)")
-            case "highlight_time" | "highlighttime":
-                out["highlight_time"] = float(raw_value)
-            case "language":
-                out["language"] = str(raw_value)
-            case "screen_id" | "screenid":
-                out["screen_id"] = int(raw_value)
-            case _:
-                out[key_name] = raw_value
+        normalized_key = raw_key.lower()
+        
+        if normalized_key in TYPE_MAPPING:
+            converter = TYPE_MAPPING[normalized_key]
+            try:
+                out[normalized_key] = converter(raw_value)
+            except (ValueError, TypeError) as e:
+                raise ConfigError(f"Invalid value for '{raw_key}': {raw_value}. {str(e)}") from e
+        else:
+            # Unknown keys are ignored in strict mode
+            pass
+    
     return out
 
 
-def _read_env(prefix: str = "SIKULIPLUS_") -> Dict[str, Any]:
-    out: Dict[str, Any] = {}
-    for env_name, env_value in os.environ.items():
-        if not env_name.startswith(prefix):
-            continue
-        key = env_name[len(prefix) :].lower()
-        key = key.replace("-", "_")
-        out[key] = env_value
-    return _coerce_types(out)
-
-
-def _find_config_file(provided: Optional[str] = None) -> Optional[str]:
-    if provided:
-        return provided
-    cwd = os.getcwd()
-    # walk the directory tree from cwd, top-down, returning the first match
-    target_names = {"sikuli.toml", "config.sikuli"}
-    for dirpath, dirnames, filenames in os.walk(cwd):
-        for filename in filenames:
-            if filename in target_names:
-                return os.path.join(dirpath, filename)
-    return None
-
-
-def merge_dicts(*dicts: Dict[str, Any]) -> Dict[str, Any]:
-    """Merge multiple dictionaries with later ones taking precedence."""
-    result: Dict[str, Any] = {}
-    for source_dict in dicts:
-        if not source_dict:
-            continue
-        result.update(source_dict)
-    return result
-
-
-def load_config(
-    config_path: Optional[str] = None,
-    pyproject_path: str = "pyproject.toml",
-    env_prefix: str = "SIKULIPLUS_",
-) -> Config:
-    """Load configuration with precedence:
-    defaults <- pyproject.toml (tool.sikuliplus) <- config file (sikuli.toml|config.sikuli) <- env vars
+def coerce_bool(value: Any) -> bool:
+    """Coerce boolean values with support for string "true"/"false".
+    
+    Handles:
+    - Strings "true"/"false" (case insensitive) -> converts to bool
+    - Everything else -> passed to Python's built-in bool() (0, 1, None, etc.)
+    
+    Does NOT handle special cases like "yes"/"no", "on"/"off", etc.
+    
+    Args:
+        value: Value to convert to boolean
+        
+    Returns:
+        Boolean value
+        
+    Raises:
+        ValueError: If string is not "true" or "false"
     """
-    defaults = Config().__dict__
-
-    # pyproject.toml section
-    pyproject_raw = _read_toml_file(pyproject_path)
-    pyproject_cfg = _extract_pyproject_section(pyproject_raw, "tool.sikuliplus")
-    pyproject_cfg = _coerce_types(pyproject_cfg or {})
-
-    # config file
-    cfg_file_path = _find_config_file(config_path)
-    file_cfg: Dict[str, Any] = {}
-    if cfg_file_path:
-        file_raw = _read_toml_file(cfg_file_path)
-        # if file has a top-level table matching 'sikuliplus' or 'inovarobot', try to use it
-        if isinstance(file_raw, dict) and "sikuliplus" in file_raw:
-            file_cfg = file_raw.get("sikuliplus", {})
+    if isinstance(value, str):
+        lowered = value.lower()
+        if lowered == "true":
+            return True
+        elif lowered == "false":
+            return False
         else:
-            file_cfg = file_raw
-        file_cfg = _coerce_types(file_cfg or {})
+            raise ValueError("string must be 'true' or 'false' (case insensitive)")
+    else:
+        return bool(value)
 
-    # environment variables
-    env_cfg = _read_env(env_prefix)
 
-    merged = merge_dicts(defaults, pyproject_cfg, file_cfg, env_cfg)
-
-    # validations
-    if "similarity" in merged:
-        sim = float(merged["similarity"])
+def _validate_config_values(config_dict: Dict[str, Any]) -> None:
+    """Validate configuration values.
+    
+    Args:
+        config_dict: Configuration dictionary to validate
+        
+    Raises:
+        ConfigError: If validation fails
+    """
+    if "similarity" in config_dict:
+        sim = float(config_dict["similarity"])
         if not (0.0 <= sim <= 1.0):
             raise ConfigError("'similarity' must be between 0.0 and 1.0")
 
-    if "screen_id" in merged:
-        screen_id = int(merged["screen_id"])
+    if "screen_id" in config_dict:
+        screen_id = int(config_dict["screen_id"])
         if screen_id < 0:
             raise ConfigError("'screen_id' must be >= 0")
+            
+    if "timeout" in config_dict:
+        timeout = float(config_dict["timeout"])
+        if timeout <= 0:
+            raise ConfigError("'timeout' must be > 0")
+            
+    if "action_speed" in config_dict:
+        action_speed = float(config_dict["action_speed"])
+        if action_speed < 0:
+            raise ConfigError("'action_speed' must be >= 0")
+            
+    if "highlight_time" in config_dict:
+        highlight_time = float(config_dict["highlight_time"])
+        if highlight_time <= 0:
+            raise ConfigError("'highlight_time' must be > 0")
 
-    return Config(
-        similarity=float(merged.get("similarity", defaults["similarity"])),
-        timeout=float(merged.get("timeout", defaults["timeout"])),
-        action_speed=float(merged.get("action_speed", defaults["action_speed"])),
-        highlight=bool(merged.get("highlight", defaults["highlight"])),
-        highlight_time=float(merged.get("highlight_time", defaults["highlight_time"])),
-        language=str(merged.get("language", defaults["language"])),
-        screen_id=int(merged.get("screen_id", defaults["screen_id"])),
-    )
+
+
