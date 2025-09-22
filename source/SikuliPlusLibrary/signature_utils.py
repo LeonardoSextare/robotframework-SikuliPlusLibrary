@@ -1,73 +1,130 @@
 import inspect
-from typing import Dict, Any
+from typing import Dict, Any, List, Set
 
 
-def _resolve_function(obj, method_name: str):
-    """Return the function object for a method on obj.
+def apply_methods_defaults(obj, defaults_map: Dict[str, Any]) -> None:
+    """Apply default values to all methods in a class automatically.
 
-    Prefer the class attribute (unbound function) so we update the function
-    that's shared by instances. If not present, fall back to the bound method
-    and its __func__.
+    This function introspects the class and applies default values to any
+    parameter that matches the keys in defaults_map across ALL methods.
+
+    Args:
+        obj: Instance of the class to modify
+        defaults_map: Dict mapping parameter name -> default value
+                     Example: {'timeout': 1.0, 'similarity': 0.7}
     """
     cls = obj.__class__
-    if hasattr(cls, method_name):
-        return getattr(cls, method_name)
-    raise ValueError(f"Method '{method_name}' not found on {cls.__name__}; expected a class-defined method")
+    method_names = _get_user_defined_methods(cls)
+
+    for method_name in method_names:
+        method = getattr(cls, method_name)
+        _apply_defaults_to_method(method, defaults_map)
 
 
-def update_method_defaults(obj, method_name: str, defaults_map: Dict[str, Any]) -> None:
-    """Set parameter defaults for a method so they appear in help and at runtime.
+def _get_user_defined_methods(cls) -> List[str]:
+    """Get list of user-defined method names from a class.
 
-    - obj: instance containing the method
-    - method_name: name of the method to update
-    - defaults_map: dict mapping parameter name -> default value
+    Args:
+        cls: Class to inspect
+
+    Returns:
+        List of method names that are user-defined functions
     """
-    func = _resolve_function(obj, method_name)
-    sig = inspect.signature(func)
-    params = list(sig.parameters.values())
+    method_names = []
 
-    # quick validation: ensure defaults_map keys exist in the function signature
-    param_names = {p.name for p in params}
-    invalid = set(defaults_map) - param_names
-    if invalid:
-        raise ValueError(
-            f"Invalid default parameter(s) for '{method_name}': {', '.join(sorted(invalid))}. " f"Available parameters: {', '.join(sorted(param_names))}"
-        )
+    for name in dir(cls):
+        # Skip private/special methods
+        if name.startswith("_"):
+            continue
 
-    # create new Parameter list with replaced defaults
+        attr = getattr(cls, name)
+
+        # Only include user-defined functions
+        if inspect.isfunction(attr):
+            method_names.append(name)
+
+    return method_names
+
+
+def _apply_defaults_to_method(method, defaults_map: Dict[str, Any]) -> None:
+    """Apply default values to a specific method if it has matching parameters.
+
+    Args:
+        method: Function object to modify
+        defaults_map: Dict mapping parameter name -> default value
+    """
+
+    sig = inspect.signature(method)
+    param_names = set(sig.parameters.keys())
+    matching_params = set(defaults_map.keys()) & param_names
+
+    if matching_params:
+        new_params = _create_updated_parameters(sig, defaults_map, matching_params)
+        _update_method_signature(method, sig, new_params)
+
+
+def _create_updated_parameters(signature: inspect.Signature, defaults_map: Dict[str, Any], matching_params: Set[str]) -> List[inspect.Parameter]:
+    """Create new parameter list with updated default values.
+
+    Args:
+        signature: Original method signature
+        defaults_map: Dict of new default values
+        matching_params: Set of parameter names to update
+
+    Returns:
+        List of parameters with updated defaults
+    """
     new_params = []
-    for param in params:
-        if param.name in defaults_map:
+
+    for param in signature.parameters.values():
+        if param.name in matching_params:
             new_params.append(param.replace(default=defaults_map[param.name]))
         else:
             new_params.append(param)
 
-    func.__signature__ = sig.replace(parameters=new_params)
+    return new_params
 
-    positional_kinds = (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
-    kwonly_kind = inspect.Parameter.KEYWORD_ONLY
-    empty = inspect._empty
 
+def _update_method_signature(method, original_sig: inspect.Signature, new_params: List[inspect.Parameter]) -> None:
+    """Update method signature and runtime defaults.
+
+    Args:
+        method: Function object to update
+        original_sig: Original signature
+        new_params: New parameters with updated defaults
+    """
+    # Update the function signature for introspection
+    new_sig = original_sig.replace(parameters=new_params)
+    method.__signature__ = new_sig
+
+    _update_runtime_defaults(method, new_params)
+
+
+def _update_runtime_defaults(func, params: List[inspect.Parameter]) -> None:
+    """Update function's runtime defaults (__defaults__ and __kwdefaults__).
+
+    Args:
+        func: Function to update
+        params: List of parameters with default values
+    """
+    empty = inspect.Parameter.empty
+    positional_only = inspect.Parameter.POSITIONAL_ONLY
+    positional_or_keyword = inspect.Parameter.POSITIONAL_OR_KEYWORD
+    keyword_only = inspect.Parameter.KEYWORD_ONLY
+    
     positional_defaults = []
-    for param in new_params:
-        if param.kind in positional_kinds and param.default is not empty:
-            positional_defaults.append(param.default)
-
     kwonly_defaults = {}
-    for param in new_params:
-        if param.kind is kwonly_kind and param.default is not empty:
+
+    for param in params:
+        if param.default is empty:
+            continue
+        
+        if param.kind in (positional_only, positional_or_keyword):
+            positional_defaults.append(param.default)
+        elif param.kind is keyword_only:
             kwonly_defaults[param.name] = param.default
 
     if positional_defaults:
         func.__defaults__ = tuple(positional_defaults)
     if kwonly_defaults:
         func.__kwdefaults__ = kwonly_defaults
-
-
-def update_methods_defaults(obj, mapping: Dict[str, Dict[str, Any]]) -> None:
-    """Apply defaults_map for multiple methods.
-
-    mapping example: { 'method_name': {'timeout': 1.0, 'similarity': 0.7}, ... }
-    """
-    for method_name, defaults_map in mapping.items():
-        update_method_defaults(obj, method_name, defaults_map)

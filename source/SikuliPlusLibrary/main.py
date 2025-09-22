@@ -9,7 +9,7 @@ import os
 from contextlib import redirect_stdout
 
 from .config import Config
-from .signature_utils import update_methods_defaults
+from .signature_utils import apply_methods_defaults
 from .modules.vision import VisionModule
 from .decorators import export_keyword
 
@@ -33,20 +33,11 @@ class SikuliPlusLibrary:
         self.robot: BuiltIn
         self.sikuli: SikuliLibrary
 
-        # Update vision keywords defaults from config using explicit mapping
-        update_methods_defaults(
-            self,
-            {
-                "wait_until_image_appear": {"timeout": self.config.timeout, "similarity": self.config.similarity},
-                "wait_until_image_dissapear": {"timeout": self.config.timeout, "similarity": self.config.similarity},
-                "count_image": {"timeout": self.config.timeout, "similarity": self.config.similarity},
-                "count_multiple_images": {"timeout": self.config.timeout, "similarity": self.config.similarity},
-                "image_exists": {"timeout": self.config.timeout, "similarity": self.config.similarity},
-                "multiple_images_exists": {"timeout": self.config.timeout, "similarity": self.config.similarity},
-                "wait_one_of_multiple_images": {"timeout": self.config.timeout, "similarity": self.config.similarity},
-                "wait_multiple_images": {"timeout": self.config.timeout, "similarity": self.config.similarity},
-            },
-        )
+        # Update vision keywords defaults from config automatically
+        apply_methods_defaults(self, {
+            "timeout": self.config.timeout,
+            "similarity": self.config.similarity
+        })
 
     def start_suite(self, data, result):
         """Robot Framework listener invoked when a test suite starts.
