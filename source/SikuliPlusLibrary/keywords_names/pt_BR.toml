@@ -1,11 +1,9 @@
 # Portuguese (Brazil) keyword names and documentation  
 # File: pt_BR.toml
 
-[names]
-wait_until_image_appear = "Aguardar Até Imagem Aparecer"
-
-[docs]
-wait_until_image_appear = """Aguarda até que a imagem especificada apareça na tela.
+[wait_until_image_appear]
+robot_name = "Aguardar Até Imagem Aparecer"
+doc_string = """Aguarda até que a imagem especificada apareça na tela.
 
 Argumentos:
     image: Caminho para o arquivo de imagem a aguardar

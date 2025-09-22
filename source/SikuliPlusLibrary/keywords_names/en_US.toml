@@ -1,11 +1,9 @@
 # English keyword names and documentation
 # File: en_US.toml
 
-[names]
-wait_until_image_appear = "Wait Until Image Appear"
-
-[docs]
-wait_until_image_appear = """Wait until the specified image appears on screen.
+[wait_until_image_appear]
+robot_name = "Wait Until Image Appear"
+doc_string = """Wait until the specified image appears on the screen.
 
 Args:
     image: Path to the image file to wait for

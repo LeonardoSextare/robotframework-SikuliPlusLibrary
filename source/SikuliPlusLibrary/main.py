@@ -10,8 +10,8 @@ from contextlib import redirect_stdout
 
 from .config import Config
 from .signature_utils import apply_methods_defaults
+from .locale_utils import locale_methods
 from .modules.vision import VisionModule
-from .decorators import export_keyword
 
 
 @library(scope="GLOBAL", version="0.1.0")
@@ -38,6 +38,9 @@ class SikuliPlusLibrary:
             "timeout": self.config.timeout,
             "similarity": self.config.similarity
         })
+        
+        # Apply localization for robot names and docstrings
+        locale_methods(self, language)
 
     def start_suite(self, data, result):
         """Robot Framework listener invoked when a test suite starts.
@@ -116,7 +119,7 @@ class SikuliPlusLibrary:
             pass
 
     # --- Vision keywords (skeletons copied from VisionMixin signatures) ---
-    @export_keyword('Wait Until Image Appear', docstring='')
+    @keyword
     def wait_until_image_appear(
         self,
         image: str,

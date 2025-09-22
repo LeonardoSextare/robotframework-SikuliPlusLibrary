@@ -9,3 +9,4 @@ instructions.agent
 sikuliplus.egg-info
 SikuliPlusLibrary.egg-info
 logs/
+.github/
