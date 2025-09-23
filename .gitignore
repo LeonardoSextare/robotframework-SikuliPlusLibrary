@@ -5,8 +5,8 @@ results/
 sikuli_captured/
 Sikuli_java**
 dist/
-instructions.agent
 sikuliplus.egg-info
 SikuliPlusLibrary.egg-info
 logs/
 .github/
+.env

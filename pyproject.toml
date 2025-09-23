@@ -4,7 +4,12 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["robotframework>=7.3.2", "robotframework-sikulilibrary>=2.0.5"]
+dependencies = [
+    "robotframework>=7.3.2",
+    "robotframework-sikulilibrary>=2.0.5",
+    "setuptools>=80.9.0",
+    "twine>=6.2.0",
+]
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
@@ -14,19 +19,11 @@ build-backend = "setuptools.build_meta"
 where = ["source"]
 include = ["SikuliPlusLibrary*"]
 
-[tool.sikuliplus]
-similarity = 0.7
-timeout = 1.0
-action_speed = 0.1
-highlight = true
-highlight_time = 2.0
-language = "pt_BR"
-screen_id = 1
-
 [tool.uv.sources]
 sikulipluslibrary = { workspace = true }
 
 [dependency-groups]
 dev = [
     "sikulipluslibrary",
+    "robotframework-robocop",
 ]

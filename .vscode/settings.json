@@ -11,6 +11,12 @@
     "**/Sikuli_java**": true
   },
 
+  "workbench.colorCustomizations": {
+    "editorInfo.foreground": "#006eff", 
+    "editorError.foreground": "#F00",
+    "editorWarning.foreground": "#ffa23e"
+  },
+
   // "terminal.integrated.env.windows": {
   //   "PYTHONPATH": "${workspaceFolder}"
   // },
@@ -19,16 +25,11 @@
   "code-runner.executorMapByFileExtension": {
     ".robot": "cls ; uv run robot -d logs --loglevel TRACE"
   },
-  "workbench.colorCustomizations": {
-    "editorInfo.foreground": "#006eff", 
-    "editorError.foreground": "#F00",
-    "editorWarning.foreground": "#ffa23e"
-  },
-
+  
+  //RobotCode
+  "robotcode.robocop.enabled": true,
+  "robotcode.robocop.configFile": "null",
   // "python.defaultInterpreterPath": "${workspaceFolder}\\.vscode\\.venv\\Scripts\\python.exe",
   "python.experiments.optInto": ["pythonTerminalEnvVarActivation"],
-
-  // Black Formatter Python
-  "black-formatter.args": ["--line-length=160"],
 
 }
