@@ -1,2 +1,2 @@
-[tool.robotcode-analyze]
-modifiers.ignore = ["*"]
+[tool.robocop.lint]
+select = ["empty-section"]
