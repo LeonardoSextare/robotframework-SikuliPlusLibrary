@@ -15,9 +15,9 @@ class Config:
     timeout: float = 1.0
     action_speed: float = 0.1
     highlight: bool = True
-    highlight_time: float = 2.0
-    language: str = "en_US"
+    highlight_time: float = 1.0
     screen_id: int = 0
+    # language: str = "en_US"
 
     @classmethod
     def from_kwargs(cls, **kwargs: Any) -> Dict[str, Any]:
@@ -38,10 +38,10 @@ class Config:
         return cls.from_kwargs(**out)
     
     @classmethod
-    def load_config(cls, language: str = "en_US", **kwargs: Any) -> Config:
+    def load_config(cls, **kwargs: Any) -> Config:
         defaults = cls().__dict__
         
-        kwargs_dict = cls.from_kwargs(language=language, **kwargs)
+        kwargs_dict = cls.from_kwargs(**kwargs)
         
         env_dict = cls.from_environment("SIKULIPLUS_")
         
@@ -53,9 +53,12 @@ class Config:
             action_speed=float(merged["action_speed"]),
             highlight=bool(merged["highlight"]),
             highlight_time=float(merged["highlight_time"]),
-            language=str(merged["language"]),
             screen_id=int(merged["screen_id"]),
+            # language=str(merged["language"]),
         )
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return self.__dict__
 
 
 def _coerce_types(raw: Dict[str, Any]) -> Dict[str, Any]:
@@ -65,8 +68,8 @@ def _coerce_types(raw: Dict[str, Any]) -> Dict[str, Any]:
         "action_speed": float,
         "highlight": coerce_bool,
         "highlight_time": float,
-        "language": str,
         "screen_id": int,
+        # "language": str,
     }
     
     out: Dict[str, Any] = {}

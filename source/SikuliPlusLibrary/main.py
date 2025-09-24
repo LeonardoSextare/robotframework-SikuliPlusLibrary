@@ -7,35 +7,38 @@ from SikuliLibrary import SikuliLibrary
 from robot.api.deco import library, keyword
 import os
 from contextlib import redirect_stdout
-
-from .config import Config
 from .signature_utils import apply_methods_defaults
-from .locale_utils import locale_methods
+from .config import Config
 from .modules.vision import VisionModule
 
 
 @library(scope="GLOBAL", version="0.1.0")
 class SikuliPlusLibrary:
-    """
-    Wrapper library for SikuliLibrary for Robot Framework with enhanced keywords for image recognition and interaction.
-    
-    """
+    def __init__(self, **kwargs) -> None:
+        """
+        Robot Framework library for GUI automation using image recognition (wrapper of SikuliLibrary).
 
-    def __init__(self, language: str = "en_US", **kwargs) -> None:
+        Import example:\n
+        **Library**    SikuliPlusLibrary    similarity=0.8    timeout=5
+
+        Main options (as arguments or _env_ vars):
+        \n**similarity:**    Image match threshold (default 0.7)
+        \n**timeout:**       Default timeout in seconds (default 1.0)
+        \n**highlight:**     Highlight matches (default True)
+        \n**highlight_time:** Highlight duration (default 1.0)
+        \n**action_speed:**  Speed for mouse and keyboard actions (default 0.1)
+        \n**screen_id:**     Monitor index (default 0)
+        """
         self.ROBOT_LIBRARY_LISTENER = self
         self.ROBOT_LISTENER_API_VERSION = 3
 
-        self.config: Config = Config.load_config(language=language, **kwargs)
+        self.config: Config = Config.load_config(**kwargs)
 
         self.robot: BuiltIn
         self.sikuli: SikuliLibrary
+        self.vision: VisionModule
 
-        apply_methods_defaults(self, {
-            "timeout": self.config.timeout,
-            "similarity": self.config.similarity
-        })
-        
-        locale_methods(self, language)
+        apply_methods_defaults(self, self.config.to_dict())
 
     def start_suite(self, data, result):
         self.robot = BuiltIn()
@@ -57,7 +60,10 @@ class SikuliPlusLibrary:
         total_screens: int = self.sikuli.run_keyword("Get Number Of Screens")  # type: ignore
 
         if self.config.screen_id >= total_screens:
-            raise ValueError(f"Invalid screen_id {self.config.screen_id}. " f"Available screens: 0 to {total_screens - 1} (total: {total_screens})")
+            raise ValueError(
+                f"Invalid screen_id {self.config.screen_id}. "
+                f"Available screens: 0 to {total_screens - 1} (total: {total_screens})"
+            )
 
         self.sikuli.run_keyword("Change Screen Id", [self.config.screen_id])
 
@@ -94,7 +100,9 @@ class SikuliPlusLibrary:
         similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
     ):
-        return self.vision.wait_until_image_appear(image, timeout=timeout, roi=roi, similarity=similarity)
+        return self.vision.wait_until_image_appear(
+            image, timeout=timeout, roi=roi, similarity=similarity
+        )
 
     @keyword
     def wait_until_image_dissapear(
@@ -105,7 +113,9 @@ class SikuliPlusLibrary:
         similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
     ):
-        return self.vision.wait_until_image_dissapear(image, timeout=timeout, similarity=similarity, roi=roi)
+        return self.vision.wait_until_image_dissapear(
+            image, timeout=timeout, similarity=similarity, roi=roi
+        )
 
     @keyword
     def count_image(
@@ -116,7 +126,9 @@ class SikuliPlusLibrary:
         similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
     ) -> int:
-        return self.vision.count_image(image, timeout=timeout, roi=roi, similarity=similarity)
+        return self.vision.count_image(
+            image, timeout=timeout, roi=roi, similarity=similarity
+        )
 
     @keyword
     def count_multiple_images(
@@ -126,7 +138,9 @@ class SikuliPlusLibrary:
         similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
     ) -> Dict[str, int]:
-        return self.vision.count_multiple_images(*images, timeout=timeout, roi=roi, similarity=similarity)
+        return self.vision.count_multiple_images(
+            *images, timeout=timeout, roi=roi, similarity=similarity
+        )
 
     @keyword
     def image_exists(
@@ -137,7 +151,9 @@ class SikuliPlusLibrary:
         similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
     ) -> bool:
-        return self.vision.image_exists(image, timeout=timeout, similarity=similarity, roi=roi)
+        return self.vision.image_exists(
+            image, timeout=timeout, similarity=similarity, roi=roi
+        )
 
     @keyword
     def multiple_images_exists(
@@ -147,7 +163,9 @@ class SikuliPlusLibrary:
         similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
     ) -> Dict[str, bool]:
-        return self.vision.multiple_images_exists(*images, timeout=timeout, roi=roi, similarity=similarity)
+        return self.vision.multiple_images_exists(
+            *images, timeout=timeout, roi=roi, similarity=similarity
+        )
 
     @keyword
     def wait_one_of_multiple_images(
@@ -157,7 +175,9 @@ class SikuliPlusLibrary:
         similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
     ) -> str:
-        return self.vision.wait_one_of_multiple_images(*images, timeout=timeout, roi=roi, similarity=similarity)
+        return self.vision.wait_one_of_multiple_images(
+            *images, timeout=timeout, roi=roi, similarity=similarity
+        )
 
     @keyword
     def wait_multiple_images(
@@ -167,4 +187,6 @@ class SikuliPlusLibrary:
         similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
     ):
-        return self.vision.wait_multiple_images(*images, timeout=timeout, roi=roi, similarity=similarity)
+        return self.vision.wait_multiple_images(
+            *images, timeout=timeout, roi=roi, similarity=similarity
+        )
