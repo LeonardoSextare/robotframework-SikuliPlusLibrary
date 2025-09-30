@@ -15,7 +15,7 @@ requires-python = ">=3.13"
 authors = [{ name = "Leonardo Sextare", email = "leonardosextare@gmail.com" }]
 dependencies = [
     "robotframework>=7.0.0",
-    "robotframework-sikulilibrary>=2.0.3, <2.0.5",
+    "robotframework-sikulilibrary==2.0.3",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

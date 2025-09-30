@@ -533,7 +533,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "robotframework", specifier = ">=7.0.0" },
-    { name = "robotframework-sikulilibrary", specifier = ">=2.0.3,<2.0.5" },
+    { name = "robotframework-sikulilibrary", specifier = "==2.0.3" },
 ]
 
 [package.metadata.requires-dev]
