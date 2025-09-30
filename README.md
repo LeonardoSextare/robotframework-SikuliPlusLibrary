@@ -1,62 +1,37 @@
 # SikuliPlusLibrary
 
-[![Version](https://img.shields.io/pypi/v/sikulipluslibrary.svg?label=version&style=flat-square)](https://pypi.org/project/robotframework-sikulipluslibrary/)
-[![License](https://img.shields.io/github/license/leonardosextare/sikulipluslibrary.svg?style=flat-square)](LICENSE)
+## Sobre o Projeto
 
-Wrapper for [SikuliLibrary](https://github.com/rainmanwy/robotframework-sikulilibrary) in **Robot Framework**, bringing:
-- ✅ Simplified configuration management
-- ✅ Enhanced visual feedback (automatic highlight)
-- ✅ More keywords and extra parameters for greater flexibility
+A **SikuliPlusLibrary** é uma biblioteca para o Robot Framework que estende a [SikuliLibrary](https://github.com/rainmanwy/robotframework-sikulilibrary) para automação de testes de GUI por meio de reconhecimento de imagens. Ela fornece funcionalidades adicionais de automação de GUI não cobertas pela SikuliLibrary original, utilizando apenas uma instância da SikuliLibrary sem modificar seu código.
 
----
+## Produto Mínimo Viável (MVP)
 
-## 📦 Installation
+Este projeto está atualmente em sua fase de MVP, com foco principal no módulo de visão computacional (`vision.py`). O objetivo é estabelecer uma base sólida para expansões futuras, implementando funcionalidades essenciais de reconhecimento visual.
 
-```bash
-pip install sikulipluslibrary
-```
+## Checklist de Objetivos
 
-### 🔗 Dependencies
-- [Robot Framework](https://robotframework.org/)
-- [robotframework-sikulilibrary](https://github.com/rainmanwy/robotframework-sikulilibrary)  
-  - **Requires the Java SDK (JDK)** to be installed and properly configured.
+### Objetivos Atuais (MVP)
+- [ ] Implementar base sólida para expansão futura
+- [ ] Implementar funcionalidades de visão computacional (vision.py)
+  - [ ] ROI Temporário
+  - [ ] Similarity Temporário
+  - [ ] Highlight nas imagens encontradas
+- [ ] Funções iniciais:
+  - [ ] Wait Until Image Appears
+  - [ ] Wait One of Multiple Images Appears
+  - [ ] Wait Until Multiple Images Appear
+- [ ] Implementar possibilidade de escolher a tela alvo (multi-monitor)
 
----
-
-## 📖 Documentation
-[👉 Access here](url)
-
----
-
-## 🚀 Usage
-
-Suite example:
-```robot
-*** Settings ***
-Library     SikuliPlusLibrary  similarity=0.85
-
-*** Test Cases ***
-Test Vision
-    Wait Until Image Appear    ${IMAGES}\\exemple_button.png
-    Wait Until Image Appear    ${IMAGES}\\exemple_button_2.png    10    similarity=0.75
-    Wait Until Image Appear    ${IMAGES}\\especific_field.png     roi=${IMAGES}\\especific_modal.png
-```
-
----
-
-## ✨ Main Features
-- 📌 **New Keywords** → more power for visual recognition
-- ⚙️ **Additional parameters** → `similarity` and `roi` directly in the commands
-- 🌍 **Global configuration management** via *Library Arguments* and environment variables
-- 🎯 **Automatic highlight** → immediate visual feedback on the located elements
-
----
-
-### 👀 Highlight Example
-![example_highlight](https://github.com/user-attachments/assets/85432a06-c576-4168-ad07-b6cdd2b9c4d4)
-
----
-
-### 🔧 In Development
-- Improved handling of **keyword names**, **docstrings**, and **exceptions**
-- Support for a **dedicated configuration file** (`sikuliplus.toml`)
+### Planos Futuros
+- [ ] Tratamento de Erros e Exceções melhorados
+- [ ] Módulo de mouse (mouse.py)
+- [ ] Módulo de teclado (keyboard.py)
+- [ ] Suporte a múltiplas linguagens (Keywords, Docstrings, Mensagens de erro localizadas)
+- [ ] Suporte a configuração global por:
+  - [ ] Variáveis de ambiente
+  - [ ] Arquivo de configuração (TOML)
+  - [ ] Pyproject.toml
+  - [ ] Argumentos na importação da biblioteca no Robot Framework
+- [ ] Cobertura de testes automatizados (unitários e integração)
+- [ ] Cobertura de testes no ambiente Robot Framework
+- [ ] Documentação completa com libdoc
