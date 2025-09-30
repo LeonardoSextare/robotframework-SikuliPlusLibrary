@@ -1,37 +1,37 @@
 # SikuliPlusLibrary
 
-## Sobre o Projeto
+## About the Project
 
-A **SikuliPlusLibrary** é uma biblioteca para o Robot Framework que estende a [SikuliLibrary](https://github.com/rainmanwy/robotframework-sikulilibrary) para automação de testes de GUI por meio de reconhecimento de imagens. Ela fornece funcionalidades adicionais de automação de GUI não cobertas pela SikuliLibrary original, utilizando apenas uma instância da SikuliLibrary sem modificar seu código.
+The **SikuliPlusLibrary** is a library for Robot Framework that extends the [SikuliLibrary](https://github.com/rainmanwy/robotframework-sikulilibrary) for GUI test automation through image recognition. It provides additional GUI automation functionalities not covered by the original SikuliLibrary, using only an instance of SikuliLibrary without modifying its code.
 
-## Produto Mínimo Viável (MVP)
+## Minimum Viable Product (MVP)
 
-Este projeto está atualmente em sua fase de MVP, com foco principal no módulo de visão computacional (`vision.py`). O objetivo é estabelecer uma base sólida para expansões futuras, implementando funcionalidades essenciais de reconhecimento visual.
+This project is currently in its MVP phase, with a primary focus on the computer vision module (`vision.py`). The goal is to establish a solid foundation for future expansions, implementing essential visual recognition functionalities.
 
-## Checklist de Objetivos
+## Objectives Checklist
 
-### Objetivos Atuais (MVP)
-- [ ] Implementar base sólida para expansão futura
-- [ ] Implementar funcionalidades de visão computacional (vision.py)
-  - [ ] ROI Temporário
-  - [ ] Similarity Temporário
-  - [ ] Highlight nas imagens encontradas
-- [ ] Funções iniciais:
+### Current Objectives (MVP)
+- [ ] Implement solid foundation for future expansion
+- [ ] Implement computer vision functionalities (vision.py)
+  - [ ] Temporary ROI
+  - [ ] Temporary Similarity
+  - [ ] Highlight on found images
+- [ ] Initial functions:
   - [ ] Wait Until Image Appears
   - [ ] Wait One of Multiple Images Appears
   - [ ] Wait Until Multiple Images Appear
-- [ ] Implementar possibilidade de escolher a tela alvo (multi-monitor)
+- [ ] Implement possibility to choose target screen (multi-monitor)
 
-### Planos Futuros
-- [ ] Tratamento de Erros e Exceções melhorados
-- [ ] Módulo de mouse (mouse.py)
-- [ ] Módulo de teclado (keyboard.py)
-- [ ] Suporte a múltiplas linguagens (Keywords, Docstrings, Mensagens de erro localizadas)
-- [ ] Suporte a configuração global por:
-  - [ ] Variáveis de ambiente
-  - [ ] Arquivo de configuração (TOML)
+### Future Plans
+- [ ] Improved Error and Exception Handling
+- [ ] Mouse module (mouse.py)
+- [ ] Keyboard module (keyboard.py)
+- [ ] Support for multiple languages (Keywords, Docstrings, Localized error messages)
+- [ ] Support for global configuration via:
+  - [ ] Environment variables
+  - [ ] Configuration file (TOML)
   - [ ] Pyproject.toml
-  - [ ] Argumentos na importação da biblioteca no Robot Framework
-- [ ] Cobertura de testes automatizados (unitários e integração)
-- [ ] Cobertura de testes no ambiente Robot Framework
-- [ ] Documentação completa com libdoc
+  - [ ] Arguments in the library import in Robot Framework
+- [ ] Automated test coverage (unit and integration)
+- [ ] Test coverage in Robot Framework environment
+- [ ] Complete documentation with libdoc
