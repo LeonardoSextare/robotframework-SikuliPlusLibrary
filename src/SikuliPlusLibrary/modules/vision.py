@@ -101,9 +101,29 @@ class VisionModule(ContextManagerMixin):
         similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
     ) -> str:
-        raise NotImplementedError("wait_one_of_multiple_images is not implemented yet")
+        polling_interval = 1.0
+        deadline = time.monotonic() + timeout
 
-    def wait_multiple_images(
+        with self._standard_context(similarity, roi, timeout) as add_highlight:
+            while True:
+                for img in images:
+                    image_found = self.sikuli.run_keyword("Exists", [img])
+                    if image_found:
+                        add_highlight(img)
+                        return img
+
+                now = time.monotonic()
+                if now >= deadline:
+                    break
+
+                time.sleep(min(polling_interval, deadline - now))
+
+            raise TimeoutError(
+                f"Timed out after {timeout:.2f}s waiting for one of the images. "
+                f"Images: {list(images)}"
+            )
+
+    def wait_multiple_images_appear(
         self,
         *images: str,
         timeout: float,
@@ -133,7 +153,6 @@ class VisionModule(ContextManagerMixin):
 
                         time.sleep(min(polling_interval, deadline - now))
 
-                    # Timeout occurred
                     missing_images = [img for img in images if img not in found_images]
                     raise TimeoutError(
                         f"Timed out after {timeout:.2f}s waiting for all images. "

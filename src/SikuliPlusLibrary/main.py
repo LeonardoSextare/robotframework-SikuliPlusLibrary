@@ -180,13 +180,13 @@ class SikuliPlusLibrary:
         )
 
     @keyword
-    def wait_multiple_images(
+    def wait_multiple_images_appear(
         self,
         *images: str,
         timeout: float,
         similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
     ):
-        return self.vision.wait_multiple_images(
+        return self.vision.wait_multiple_images_appear(
             *images, timeout=timeout, roi=roi, similarity=similarity
         )

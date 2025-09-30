@@ -12,9 +12,6 @@ def apply_methods_defaults(obj, defaults_map: Dict[str, Any]) -> None:
         _apply_defaults_to_method(method, defaults_map)
 
 
-
-
-
 def _apply_defaults_to_method(method, defaults_map: Dict[str, Any]) -> None:
     sig = inspect.signature(method)
     param_names = set(sig.parameters.keys())
@@ -25,7 +22,11 @@ def _apply_defaults_to_method(method, defaults_map: Dict[str, Any]) -> None:
         _update_method_signature(method, sig, new_params)
 
 
-def _create_updated_parameters(signature: inspect.Signature, defaults_map: Dict[str, Any], matching_params: Set[str]) -> List[inspect.Parameter]:
+def _create_updated_parameters(
+    signature: inspect.Signature,
+    defaults_map: Dict[str, Any],
+    matching_params: Set[str],
+) -> List[inspect.Parameter]:
     new_params = []
 
     for param in signature.parameters.values():
@@ -37,7 +38,9 @@ def _create_updated_parameters(signature: inspect.Signature, defaults_map: Dict[
     return new_params
 
 
-def _update_method_signature(method, original_sig: inspect.Signature, new_params: List[inspect.Parameter]) -> None:
+def _update_method_signature(
+    method, original_sig: inspect.Signature, new_params: List[inspect.Parameter]
+) -> None:
     new_sig = original_sig.replace(parameters=new_params)
     method.__signature__ = new_sig
 
@@ -49,14 +52,14 @@ def _update_runtime_defaults(func, params: List[inspect.Parameter]) -> None:
     positional_only = inspect.Parameter.POSITIONAL_ONLY
     positional_or_keyword = inspect.Parameter.POSITIONAL_OR_KEYWORD
     keyword_only = inspect.Parameter.KEYWORD_ONLY
-    
+
     positional_defaults = []
     kwonly_defaults = {}
 
     for param in params:
         if param.default is empty:
             continue
-        
+
         if param.kind in (positional_only, positional_or_keyword):
             positional_defaults.append(param.default)
         elif param.kind is keyword_only:
