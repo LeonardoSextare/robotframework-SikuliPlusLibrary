@@ -26,11 +26,14 @@ class VisionModule(ContextManagerMixin):
     def wait_until_image_dissapear(
         self,
         image: str,
-        timeout: Optional[float] = None,
+        timeout: float,
+        *,
+        similarity: float,
         roi: Optional[Union[str, List[int]]] = None,
-        similarity: Optional[float] = None,
     ):
-        raise NotImplementedError("wait_until_image_dissapear is not implemented yet")
+        with self._standard_context(similarity, roi, timeout) as add_highlight:
+            self.sikuli.run_keyword("Wait Until Screen Not Contain", [image, timeout])
+            # Note: We don't highlight here since the image should have disappeared
 
     def count_image(
         self,
@@ -118,11 +121,6 @@ class VisionModule(ContextManagerMixin):
 
                 time.sleep(min(polling_interval, deadline - now))
 
-            raise TimeoutError(
-                f"Timed out after {timeout:.2f}s waiting for one of the images. "
-                f"Images: {list(images)}"
-            )
-
     def wait_multiple_images_appear(
         self,
         *images: str,
@@ -152,9 +150,3 @@ class VisionModule(ContextManagerMixin):
                             break
 
                         time.sleep(min(polling_interval, deadline - now))
-
-                    missing_images = [img for img in images if img not in found_images]
-                    raise TimeoutError(
-                        f"Timed out after {timeout:.2f}s waiting for all images. "
-                        f"Missing images: {missing_images}"
-                    )

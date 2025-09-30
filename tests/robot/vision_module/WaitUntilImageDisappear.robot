@@ -28,18 +28,11 @@ ${classification_chart}=        ${COMPONENTS_DASHBOARD}\\classification_chart.pn
 
 
 *** Test Cases ***
-Wait for one of multiple images - basic
-    ${found_image}=    Wait One Of Multiple Images    ${DASHBOARD}    ${dashboard_title}    timeout=10    similarity=0.8
-    Should Be Equal    ${found_image}    ${DASHBOARD}
+Wait until image disappear - basic
+    Wait Until Image Dissapear    ${DASHBOARD}    timeout=10    similarity=0.8
 
-Wait for one of multiple images with ROI
-    ${found_image}=    Wait One Of Multiple Images    ${visits_today}    ${total_articles}    timeout=10    similarity=0.8    roi=${visits_card}
-    Should Be Equal    ${found_image}    ${visits_today}
+Wait until image disappear with ROI
+    Wait Until Image Dissapear    ${visits_today}    timeout=10    similarity=0.8    roi=${visits_card}
 
-Wait for one of multiple images - multiple options
-    ${found_image}=    Wait One Of Multiple Images    ${visits_card}    ${articles_card}    ${tickets_card}    ${comments_card}    timeout=10    similarity=0.8
-    Should Contain    ${found_image}    card.png
-
-Wait for one of multiple images - timeout scenario
-    ${found_image}=    Wait One Of Multiple Images    nonexistent1.png    nonexistent2.png    timeout=2    similarity=0.8
-    Should Be Equal    ${found_image}    ${None}
+Wait until image disappear - timeout scenario
+    Wait Until Image Dissapear    nonexistent.png    timeout=2    similarity=0.8

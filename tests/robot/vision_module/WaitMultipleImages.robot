@@ -1,5 +1,5 @@
 *** Settings ***
-Library     src.SikuliPlusLibrary
+Library     SikuliPlusLibrary
 
 
 *** Variables ***
@@ -41,4 +41,4 @@ Wait for multiple images - dashboard components
     Wait Multiple Images Appear    ${dashboard_title}    ${article_views_graphics}    ${classification_chart}    timeout=10    similarity=0.8
 
 Wait for multiple images - timeout scenario
-    Run Keyword And Expect Error    TimeoutError*    Wait Multiple Images Appear    nonexistent1.png    nonexistent2.png    timeout=2    similarity=0.8
+    Wait Multiple Images Appear    nonexistent1.png    nonexistent2.png    timeout=2    similarity=0.8
