@@ -1,6 +1,6 @@
 # SikuliPlusLibrary
 
-[![Version](https://img.shields.io/pypi/v/sikulipluslibrary.svg?label=version&style=flat-square)](https://pypi.org/project/sikulipluslibrary/)
+[![Version](https://img.shields.io/pypi/v/sikulipluslibrary.svg?label=version&style=flat-square)](https://pypi.org/project/robotframework-sikulipluslibrary/)
 [![License](https://img.shields.io/github/license/leonardosextare/sikulipluslibrary.svg?style=flat-square)](LICENSE)
 
 Wrapper for [SikuliLibrary](https://github.com/rainmanwy/robotframework-sikulilibrary) in **Robot Framework**, bringing:
