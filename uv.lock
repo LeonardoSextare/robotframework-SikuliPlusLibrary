@@ -1,6 +1,20 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.13"
+
+[[package]]
+name = "build"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "os_name == 'nt'" },
+    { name = "packaging" },
+    { name = "pyproject-hooks" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/25/1c/23e33405a7c9eac261dff640926b8b5adaed6a6eb3e1767d441ed611d0c0/build-1.3.0.tar.gz", hash = "sha256:698edd0ea270bde950f53aed21f3a0135672206f3911e0176261a31e0e07b397", size = 48544, upload-time = "2025-08-01T21:27:09.268Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cb/8c/2b30c12155ad8de0cf641d76a8b396a16d2c36bc6d50b621a62b7c4567c1/build-1.3.0-py3-none-any.whl", hash = "sha256:7145f0b5061ba90a1500d60bd1b13ca0a8a4cebdd0cc16ed8adf1c0e739f43b4", size = 23382, upload-time = "2025-08-01T21:27:07.844Z" },
+]
 
 [[package]]
 name = "certifi"
@@ -375,6 +389,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pyproject-hooks"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e7/82/28175b2414effca1cdac8dc99f76d660e7a4fb0ceefa4b4ab8f5f6742925/pyproject_hooks-1.2.0.tar.gz", hash = "sha256:1e859bd5c40fae9448642dd871adf459e5e2084186e8d2c2a79a824c970da1f8", size = 19228, upload-time = "2024-09-29T09:24:13.293Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bd/24/12818598c362d7f300f18e74db45963dbcb85150324092410c8b49405e42/pyproject_hooks-1.2.0-py3-none-any.whl", hash = "sha256:9e5c6bfa8dcc30091c74b0cf803c81fdd29d94f01992a7707bc97babb1141913", size = 10216, upload-time = "2024-09-29T09:24:11.978Z" },
+]
+
+[[package]]
 name = "pytz"
 version = "2025.2"
 source = { registry = "https://pypi.org/simple" }
@@ -485,16 +508,15 @@ wheels = [
 
 [[package]]
 name = "robotframework-sikulilibrary"
-version = "2.0.5"
+version = "2.0.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/96/40/a132305558e9a2fd199e1e2c426c2c0ac71df95c780b192ea7e127837ec0/robotframework_sikulilibrary-2.0.5.tar.gz", hash = "sha256:44b67b8750b3c751286538d71fcb2c4cfffcd711fc188ea10512f54bd14bb1db", size = 151579133, upload-time = "2025-08-07T23:39:30.434Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/54/77/4e010de3744218347d835ade9bdc357c162a7c0710e3d0c980e0510a9786/robotframework_sikulilibrary-2.0.5-py3-none-any.whl", hash = "sha256:9805259eeb6504f2a8faae24958df90f9dab5f8d354fda70be056b5233693f12", size = 151642325, upload-time = "2025-08-07T23:38:28.076Z" },
+    { url = "https://files.pythonhosted.org/packages/c8/2a/3493bbd909aa69c84bda91b31891fae8d548579838ba3d67814b72cb3cc0/robotframework_SikuliLibrary-2.0.3-py2.py3-none-any.whl", hash = "sha256:ed56611f1bcb7c4690f7704984993cd532e8de409d1fe48a160d712a2eee3db8", size = 73321288, upload-time = "2021-11-25T01:45:49.491Z" },
 ]
 
 [[package]]
 name = "robotframework-sikulipluslibrary"
-version = "0.1.1"
+version = "0.1.4"
 source = { editable = "." }
 dependencies = [
     { name = "robotframework" },
@@ -503,6 +525,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "build" },
     { name = "robotframework-robocop" },
     { name = "twine" },
 ]
@@ -510,11 +533,12 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "robotframework", specifier = ">=7.0.0" },
-    { name = "robotframework-sikulilibrary", specifier = ">=2.0.5" },
+    { name = "robotframework-sikulilibrary", specifier = ">=2.0.3,<2.0.5" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "build", specifier = ">=1.3.0" },
     { name = "robotframework-robocop" },
     { name = "twine", specifier = ">=6.2.0" },
 ]
