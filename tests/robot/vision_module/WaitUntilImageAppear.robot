@@ -38,8 +38,20 @@ Only image parameter
     Wait Until Image Appear    ${article_views_graphics}
     Wait Until Image Appear    ${classification_chart}
 
+
+Only image parameter and Timeout
+    Wait Until Image Appear    ${DASHBOARD}    timeout=5
+    Wait Until Image Appear    ${dashboard_title}    timeout=5
+
+
 With Roi Parameter
     Wait Until Image Appear    ${visits_today}    roi=${visits_card}
     Wait Until Image Appear    ${total_articles}    roi=${articles_card}
     Wait Until Image Appear    ${total_comments}    roi=${comments_card}
     Wait Until Image Appear    ${porcent_open_tickets}    roi=${tickets_card}
+
+With Roi Parameter and Similarity
+    Wait Until Image Appear    ${visits_today}    roi=${visits_card}    similarity=0.85    
+    Wait Until Image Appear    ${total_articles}    roi=${articles_card}    similarity=0.85
+    Wait Until Image Appear    ${total_comments}    roi=${comments_card}    similarity=0.85
+    Wait Until Image Appear    ${porcent_open_tickets}    roi=${tickets_card}    similarity=0.85
