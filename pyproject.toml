@@ -1,29 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["src/SikuliPlusLibrary"]
+
 [project]
-name = "SikuliPlusLibrary"
-version = "0.1.0"
-description = "Add your description here"
+name = "robotframework-SikuliPlusLibrary"
+version = "0.1.1"
+description = "A wrapper for robotframework-SikuliLibrary to be used with Robot Framework"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-    "robotframework>=7.3.2",
-    "robotframework-sikulilibrary>=2.0.5",
-    "setuptools>=80.9.0",
-    "twine>=6.2.0",
+authors = [{ name = "Leonardo Sextare", email = "leonardosextare@gmail.com" }]
+dependencies = ["robotframework>=7.0.0", "robotframework-sikulilibrary>=2.0.5"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Framework :: Robot Framework :: Library",
 ]
 
-[build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools.packages.find]
-where = ["source"]
-include = ["SikuliPlusLibrary*"]
-
-[tool.uv.sources]
-sikulipluslibrary = { workspace = true }
+[project.urls]
+Homepage = "https://github.com/LeonardoSextare/robotframework-SikuliPlusLibrary"
+Issues = "https://github.com/LeonardoSextare/robotframework-SikuliPlusLibrary/issues"
 
 [dependency-groups]
 dev = [
-    "sikulipluslibrary",
-    "robotframework-robocop",
+ "robotframework-robocop",
+ "twine>=6.2.0",
 ]
