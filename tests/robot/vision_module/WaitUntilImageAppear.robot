@@ -1,5 +1,5 @@
 *** Settings ***
-Library     SikuliPlusLibrary
+Library     src.SikuliPlusLibrary
 
 
 *** Variables ***

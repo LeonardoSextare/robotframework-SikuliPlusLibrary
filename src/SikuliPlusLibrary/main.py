@@ -75,10 +75,10 @@ class SikuliPlusLibrary:
 
                 margin = 3
                 adjusted_coordinates = [
-                    coordinates[0] + margin,  # x + margin
-                    coordinates[1] + margin,  # y + margin
-                    coordinates[2] - (2 * margin),  # width - 2*margin
-                    coordinates[3] - (2 * margin),  # height - 2*margin
+                    coordinates[0] + margin, 
+                    coordinates[1] + margin,
+                    coordinates[2] - (2 * margin),
+                    coordinates[3] - (2 * margin),
                 ]
 
                 self.sikuli.run_keyword("Highlight Region", [adjusted_coordinates, 1])
