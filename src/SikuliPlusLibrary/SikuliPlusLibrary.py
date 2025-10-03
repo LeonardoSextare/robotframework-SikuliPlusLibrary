@@ -25,25 +25,25 @@ class SikuliPlusLibrary:
 
         self._keywords_arguments = {
             "Wait For Image": [
-                "image",
-                f"timeout={self.timeout_default}",
-                "*",
-                f"similarity={self.similarity_default}",
-                f"roi={self.roi_default}",
+                ("image",),
+                (f"timeout", self.timeout_default),
+                ("*",),
+                (f"similarity", self.similarity_default),
+                (f"roi", self.roi_default),
             ],
             "Wait For Any Image": [
-                "image",
-                f"timeout={self.timeout_default}",
-                "*",
-                f"similarity={self.similarity_default}",
-                f"roi={self.roi_default}",
+                ("image",),
+                (f"timeout", self.timeout_default),
+                ("*",),
+                (f"similarity", self.similarity_default),
+                (f"roi", self.roi_default),
             ],
             "Wait For All Images": [
-                "image",
-                f"timeout={self.timeout_default}",
-                "*",
-                f"similarity={self.similarity_default}",
-                f"roi={self.roi_default}",
+                ("image",),
+                (f"timeout", self.timeout_default),
+                ("*",),
+                (f"similarity", self.similarity_default),
+                (f"roi", self.roi_default),
             ],
         }
 
@@ -75,8 +75,37 @@ class SikuliPlusLibrary:
             },
         }
 
-    def run_keyword(self, name: str, args: list, kwargs: Optional[dict] = None) -> Any:
-        return self._keywords[name](*args, **(kwargs or {}))
+    def run_keyword(self, name: str, args: list, kwargs: dict) -> Any:
+        """Execute keyword with automatic default argument filling."""
+        signature = self._keywords_arguments[name]
+
+        param_names, defaults = self._parse_kw_signature(signature)
+        print(param_names, defaults)
+        positional_args = dict(zip(param_names, args))
+
+        final_kwargs = {**defaults, **positional_args, **kwargs}
+        print("final_kwargs:", final_kwargs)
+
+        return self._keywords[name](**final_kwargs)
+
+    def _parse_kw_signature(self, kw_signature: list) -> tuple[list[str], dict[str, Any]]:
+        """Extract parameter names and default values from signature."""
+        param_names = []
+        defaults = {}
+
+        for arg in kw_signature:
+            is_marker = arg in (("*",), ("/",))
+            if is_marker:
+                continue
+
+            param_name = arg[0]
+            param_names.append(param_name)
+
+            is_kwarg = len(arg) == 2
+            if is_kwarg:
+                defaults[param_name] = arg[1]
+
+        return param_names, defaults
 
     def get_keyword_names(self) -> list[str]:
         return list(self._keywords.keys())
